@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import zlib
 from enum import Enum, auto
 from typing import overload
@@ -18,7 +20,9 @@ from .event import (
 from .exception import LocalProtocolError, RemoteProtocolError
 from .header import Header, HeaderStruct
 
-__all__ = ("Connection",)
+__all__ = [
+    "Connection",
+]
 
 
 class ConnectionState(Enum):
@@ -90,8 +94,12 @@ class Connection:
             self.state = ConnectionState.CLOSED
             return
 
-        if self.state == ConnectionState.CLOSED:
-            raise RemoteProtocolError("Connection is closed")
+        match self.state:
+            case ConnectionState.CONNECTED:
+                self.state = ConnectionState.CLOSED
+                raise RemoteProtocolError("Connection is not authenticated")
+            case ConnectionState.CLOSED:
+                raise RemoteProtocolError("Connection is closed")
 
         self.buffer1.extend(data)
 
@@ -164,7 +172,10 @@ class Connection:
         except KeyError:
             from warnings import warn
 
-            warn(f"Unknown command: {event.cmd} ({buffer.decode()})", RuntimeWarning)
+            warn(
+                f"Unknown command: {event.cmd} ({buffer.decode()})",
+                RuntimeWarning,
+            )
             COMMAND_MAP[event.cmd] = Command
 
         return event
