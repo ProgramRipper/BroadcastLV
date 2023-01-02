@@ -89,8 +89,8 @@ class Connection:
         )
         return header + data
 
-    def receive_data(self, data: bytes | None) -> None:
-        if data is None:
+    def receive_data(self, data: bytes) -> None:
+        if not data:
             self.state = ConnectionState.CLOSED
             return
 

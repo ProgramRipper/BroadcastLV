@@ -274,7 +274,8 @@ def test_connection_authenticated():
     )
     assert conn.next_event() == HeartbeatResponse(1, bytearray(b""))
 
-    conn.receive_data(None)
+    # close connection
+    conn.receive_data(b"")
     assert conn.state == ConnectionState.CLOSED
 
 
@@ -298,8 +299,9 @@ def test_connection_closed():
     assert conn.state == ConnectionState.CLOSED
 
     conn = Connection()
-    conn.receive_data(None)
 
+    # passive close
+    conn.receive_data(b"")
     assert conn.state == ConnectionState.CLOSED
 
     # send after close
@@ -311,5 +313,4 @@ def test_connection_closed():
         conn.receive_data(b"any data")
 
     # receive empty data again
-        conn.receive_data(b"")
-    conn.receive_data(None)
+    conn.receive_data(b"")
