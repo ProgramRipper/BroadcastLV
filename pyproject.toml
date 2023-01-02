@@ -25,6 +25,10 @@ test = { composite = [
     "coverage report",
     "coverage html",
 ] }
+lint = { composite = [
+    "black .",
+    "isort .",
+] }
 [tool.pdm.dev-dependencies]
 dev = [
     "black~=22.12",
@@ -64,3 +68,6 @@ precision = 2
 
 [tool.pytest.ini_options]
 python_files = "tests/*"
+
+[tool.isort]
+profile = "black"

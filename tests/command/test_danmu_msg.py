@@ -4,13 +4,13 @@ from broadcastlv.command.danmu_msg import (
     DanmuMsgInfo,
     DanmuMsgInfoCheckInfo,
     DanmuMsgInfoLevel,
-    ModeInfoExtra,
     DanmuMsgInfoMedal,
     DanmuMsgInfoMeta,
     DanmuMsgInfoSender,
     DmType,
     EmotionOptions,
     ModeInfo,
+    ModeInfoExtra,
 )
 
 

@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import struct
 from typing import Literal, NamedTuple, Self
 
-__all__ = (
+__all__ = [
     "Header",
     "HeaderStruct",
-)
+]
 
 HeaderStruct = struct.Struct(">I2H2I")
 

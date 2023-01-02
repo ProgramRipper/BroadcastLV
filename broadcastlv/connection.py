@@ -144,7 +144,7 @@ class Connection:
 
             case 8:
                 event = AuthResponse.from_bytes(buffer)
-                if event.code != 0:
+                if event.code:
                     self.state = ConnectionState.CLOSED
                     raise RemoteProtocolError(
                         f"Authentication failed (code: {event.code})"

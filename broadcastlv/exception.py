@@ -1,8 +1,8 @@
-__all__ = (
+__all__ = [
     "LocalProtocolError",
     "ProtocolError",
     "RemoteProtocolError",
-)
+]
 
 
 class ProtocolError(Exception):
