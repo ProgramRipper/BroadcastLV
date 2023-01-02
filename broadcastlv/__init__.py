@@ -1,7 +1,6 @@
-from .command import DanmuMsg
+from .command import COMMAND_MAP
 from .connection import Connection
 from .event import (
-    COMMAND_MAP,
     Auth,
     AuthResponse,
     Command,
@@ -14,13 +13,12 @@ from .exception import LocalProtocolError, ProtocolError, RemoteProtocolError
 from .header import Header, HeaderStruct
 from .util import pascal_to_upper_snake
 
-__all__ = (
+__all__ = [
     # command
-    "DanmuMsg",
+    "COMMAND_MAP",
     # connection
     "Connection",
     # event
-    "COMMAND_MAP",
     "Auth",
     "AuthResponse",
     "Command",
@@ -37,4 +35,4 @@ __all__ = (
     "HeaderStruct",
     # util
     "pascal_to_upper_snake",
-)
+]

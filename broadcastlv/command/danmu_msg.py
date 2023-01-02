@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import IntEnum
 from typing import Literal
 
@@ -5,6 +7,9 @@ import msgspec
 
 from ..event import Command
 
+__all__ = [
+    "DanmuMsg",
+]
 
 # region DanmuMsgInfo
 # region DanmuMsgInfoMeta
@@ -82,7 +87,9 @@ class ModeInfo(
     def extra(self) -> ModeInfoExtra:
         """弹幕额外信息，与发送弹幕时返回的 extra 字段相同"""
         if isinstance(self.__extra, str):
-            self.__extra = msgspec.json.decode(self.__extra.encode(), type=ModeInfoExtra)
+            self.__extra = msgspec.json.decode(
+                self.__extra.encode(), type=ModeInfoExtra
+            )
         return self.__extra
 
 

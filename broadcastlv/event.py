@@ -6,10 +6,10 @@ from typing import Self
 
 import msgspec
 
+from .command import COMMAND_MAP
 from .util import pascal_to_upper_snake
 
-__all__ = (
-    "COMMAND_MAP",
+__all__ = [
     "Auth",
     "AuthResponse",
     "Command",
@@ -17,7 +17,7 @@ __all__ = (
     "Heartbeat",
     "HeartbeatResponse",
     "NeedData",
-)
+]
 
 
 class ConnectionClosed:
@@ -79,9 +79,6 @@ class EventStruct(msgspec.Struct):
 
 
 assert issubclass(EventStruct, Event)
-
-
-COMMAND_MAP: dict[str, type[Command]] = {}
 
 
 class Command(EventStruct):

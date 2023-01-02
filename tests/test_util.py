@@ -1,4 +1,4 @@
-from broadcastlv.util import pascal_to_upper_snake
+from broadcastlv.util import pascal_to_snake, pascal_to_upper_snake
 
 
 def test_pascal_to_upper_snake():
@@ -30,3 +30,34 @@ def test_pascal_to_upper_snake():
 
     for pascal, upper_snake in mapping:
         assert pascal_to_upper_snake(pascal) == upper_snake
+
+
+def test_pascal_to_snake():
+    mapping = {
+        ("DanmuMsg", "danmu_msg"),
+        ("SysMsg", "sys_msg"),
+        ("SysGift", "sys_gift"),
+        ("GuardMsg", "guard_msg"),
+        ("SendGift", "send_gift"),
+        ("Live", "live"),
+        ("Preparing", "preparing"),
+        ("End", "end"),
+        ("Close", "close"),
+        ("Block", "block"),
+        ("Round", "round"),
+        ("Welcome", "welcome"),
+        ("Refresh", "refresh"),
+        ("ActivityRedPacket", "activity_red_packet"),
+        ("RoomLimit", "room_limit"),
+        ("PkPre", "pk_pre"),
+        ("PkEnd", "pk_end"),
+        ("PkSettle", "pk_settle"),
+        ("PkMicEnd", "pk_mic_end"),
+        ("HotRoomNotify", "hot_room_notify"),
+        ("PlayTag", "play_tag"),
+        ("PlayProgressBar", "play_progress_bar"),
+        ("LivePlayerLogRecycle", "live_player_log_recycle"),
+    }
+
+    for pascal, snake in mapping:
+        assert pascal_to_snake(pascal) == snake
