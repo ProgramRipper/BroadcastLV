@@ -23,13 +23,11 @@ jobs:
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v3
       - name: Install dependencies
-        run: |
-          pdm install
-          $(pdm venv activate)
+        run: pdm install
       - name: Test
         run: |
-          coverage run -m pytest -vv
-          coverage report
-          coverage xml
+          pdm run coverage run -m pytest -vv
+          pdm run coverage report
+          pdm run coverage xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3.1.1
