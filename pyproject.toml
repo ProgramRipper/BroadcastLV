@@ -68,6 +68,9 @@ precision = 2
 
 [tool.pytest.ini_options]
 python_files = "tests/*"
+filterwarnings = [
+    "ignore::RuntimeWarning",
+]
 
 [tool.isort]
 profile = "black"
