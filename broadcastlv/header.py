@@ -1,7 +1,13 @@
 from __future__ import annotations
 
 import struct
-from typing import Literal, NamedTuple, Self
+import sys
+from typing import Literal, NamedTuple
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
 __all__ = [
     "Header",

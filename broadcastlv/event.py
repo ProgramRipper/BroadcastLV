@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+import sys
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Self
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
 import msgspec
 

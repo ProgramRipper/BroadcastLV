@@ -6,8 +6,9 @@ authors = [{ name = "ProgramRipper", email = "programripper@foxmail.com" }]
 dependencies = [
     "brotli~=1.0",
     "msgspec~=0.11",
+    "typing-extensions~=4.4; python_version < '3.11'",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 [project.optional-dependencies]
 
@@ -59,7 +60,10 @@ exclude_lines = [
     "@(typing\\.)?overload",
     # don't complain __repr__ and __str__ and __repr_args__ for representation
     "def __repr__\\(self\\).+",
-    "except ImportError:", # Don't complain about import fallback
+    # Don't complain about import fallback
+    "except ImportError:",
+    # Don't complain if code isn't run on some Python versions
+    "if sys\\.version_info",
 ]
 partial_branches = [
     "pragma: worst case"
