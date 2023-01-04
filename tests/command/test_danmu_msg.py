@@ -1,24 +1,24 @@
 from broadcastlv.command.danmu_msg import (
     ActivityInfo,
+    CheckInfo,
     DanmuMsg,
-    DanmuMsgInfo,
-    DanmuMsgInfoCheckInfo,
-    DanmuMsgInfoLevel,
-    DanmuMsgInfoMedal,
-    DanmuMsgInfoMeta,
-    DanmuMsgInfoSender,
     DmType,
     EmotionOptions,
+    Info,
+    Level,
+    Medal,
+    Meta,
     ModeInfo,
     ModeInfoExtra,
+    Sender,
 )
 
 
 def test_danmu_msg_text():
     danmu_msg = DanmuMsg(
         "DANMU_MSG",
-        DanmuMsgInfo(
-            DanmuMsgInfoMeta(
+        Info(
+            Meta(
                 0,
                 1,
                 25,
@@ -42,7 +42,7 @@ def test_danmu_msg_text():
                 ActivityInfo(activity_identity="", activity_source=0, not_show=0),
             ),
             "test",
-            DanmuMsgInfoSender(
+            Sender(
                 1087319369,
                 "ProgramRipper",
                 1,
@@ -52,7 +52,7 @@ def test_danmu_msg_text():
                 1,
                 "",
             ),
-            DanmuMsgInfoMedal(
+            Medal(
                 18,
                 "鲸呆",
                 "希月萌奈",
@@ -67,7 +67,7 @@ def test_danmu_msg_text():
                 1,
                 591892279,
             ),
-            DanmuMsgInfoLevel(
+            Level(
                 9,
                 0,
                 9868950,
@@ -78,7 +78,7 @@ def test_danmu_msg_text():
             0,
             0,
             None,
-            DanmuMsgInfoCheckInfo(ts=1672600510, ct="78573A9F"),
+            CheckInfo(ts=1672600510, ct="78573A9F"),
             0,
             0,
             None,
@@ -95,8 +95,8 @@ def test_danmu_msg_text():
 def test_danmu_msg_emoji():
     danmu_msg = DanmuMsg(
         "DANMU_MSG",
-        DanmuMsgInfo(
-            DanmuMsgInfoMeta(
+        Info(
+            Meta(
                 0,
                 1,
                 25,
@@ -128,7 +128,7 @@ def test_danmu_msg_emoji():
                 ActivityInfo(activity_identity="", activity_source=0, not_show=0),
             ),
             "what",
-            DanmuMsgInfoSender(
+            Sender(
                 1087319369,
                 "ProgramRipper",
                 1,
@@ -138,7 +138,7 @@ def test_danmu_msg_emoji():
                 1,
                 "",
             ),
-            DanmuMsgInfoMedal(
+            Medal(
                 level=18,
                 name="鲸呆",
                 uname="希月萌奈",
@@ -153,7 +153,7 @@ def test_danmu_msg_emoji():
                 is_lighted=1,
                 uid=591892279,
             ),
-            DanmuMsgInfoLevel(
+            Level(
                 9,
                 0,
                 9868950,
@@ -164,7 +164,7 @@ def test_danmu_msg_emoji():
             0,
             0,
             None,
-            DanmuMsgInfoCheckInfo(ts=1672600515, ct="5BDD7605"),
+            CheckInfo(ts=1672600515, ct="5BDD7605"),
             0,
             0,
             None,
@@ -181,8 +181,8 @@ def test_danmu_msg_emoji():
 def test_danmu_msg_mode_info_extra():
     danmu_msg = DanmuMsg(
         "DANMU_MSG",
-        DanmuMsgInfo(
-            DanmuMsgInfoMeta(
+        Info(
+            Meta(
                 0,
                 1,
                 25,
@@ -214,7 +214,7 @@ def test_danmu_msg_mode_info_extra():
                 ActivityInfo(activity_identity="", activity_source=0, not_show=0),
             ),
             "what",
-            DanmuMsgInfoSender(
+            Sender(
                 1087319369,
                 "ProgramRipper",
                 1,
@@ -224,7 +224,7 @@ def test_danmu_msg_mode_info_extra():
                 1,
                 "",
             ),
-            DanmuMsgInfoMedal(
+            Medal(
                 level=18,
                 name="鲸呆",
                 uname="希月萌奈",
@@ -239,7 +239,7 @@ def test_danmu_msg_mode_info_extra():
                 is_lighted=1,
                 uid=591892279,
             ),
-            DanmuMsgInfoLevel(
+            Level(
                 9,
                 0,
                 9868950,
@@ -250,7 +250,7 @@ def test_danmu_msg_mode_info_extra():
             0,
             0,
             None,
-            DanmuMsgInfoCheckInfo(ts=1672600515, ct="5BDD7605"),
+            CheckInfo(ts=1672600515, ct="5BDD7605"),
             0,
             0,
             None,

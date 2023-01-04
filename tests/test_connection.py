@@ -2,16 +2,16 @@ import pytest
 
 from broadcastlv.command.danmu_msg import (
     ActivityInfo,
+    CheckInfo,
     DanmuMsg,
-    DanmuMsgInfo,
-    DanmuMsgInfoCheckInfo,
-    DanmuMsgInfoLevel,
-    DanmuMsgInfoMedal,
-    DanmuMsgInfoMeta,
-    DanmuMsgInfoSender,
     DmType,
     EmotionOptions,
+    Info,
+    Level,
+    Medal,
+    Meta,
     ModeInfo,
+    Sender,
 )
 from broadcastlv.connection import Connection, ConnectionState
 from broadcastlv.event import (
@@ -99,8 +99,8 @@ def test_connection():
     )
     assert conn.next_event() == DanmuMsg(
         "DANMU_MSG",
-        DanmuMsgInfo(
-            DanmuMsgInfoMeta(
+        Info(
+            Meta(
                 0,
                 1,
                 25,
@@ -132,7 +132,7 @@ def test_connection():
                 ActivityInfo(activity_identity="", activity_source=0, not_show=0),
             ),
             "what",
-            DanmuMsgInfoSender(
+            Sender(
                 1087319369,
                 "ProgramRipper",
                 1,
@@ -142,7 +142,7 @@ def test_connection():
                 1,
                 "",
             ),
-            DanmuMsgInfoMedal(
+            Medal(
                 level=18,
                 name="鲸呆",
                 uname="希月萌奈",
@@ -157,7 +157,7 @@ def test_connection():
                 is_lighted=1,
                 uid=591892279,
             ),
-            DanmuMsgInfoLevel(
+            Level(
                 9,
                 0,
                 9868950,
@@ -168,7 +168,7 @@ def test_connection():
             0,
             0,
             None,
-            DanmuMsgInfoCheckInfo(ts=1672600515, ct="5BDD7605"),
+            CheckInfo(ts=1672600515, ct="5BDD7605"),
             0,
             0,
             None,

@@ -100,9 +100,7 @@ class ActivityInfo(msgspec.Struct):  # TODO: Complete comments
     not_show: int
 
 
-class DanmuMsgInfoMeta(
-    msgspec.Struct, array_like=True
-):  # TODO: Complete fields and comments
+class Meta(msgspec.Struct, array_like=True):  # TODO: Complete fields and comments
     __0: int
     mode: Literal[1, 4, 5]
     """弹幕位置，1: 滚动，4: 顶部，5: 底部"""
@@ -133,9 +131,7 @@ class DanmuMsgInfoMeta(
 
 
 # endregion
-class DanmuMsgInfoSender(
-    msgspec.Struct, array_like=True
-):  # TODO: Complete fields and comments
+class Sender(msgspec.Struct, array_like=True):  # TODO: Complete fields and comments
     uid: int
     """发送者 uid"""
     uname: str
@@ -150,9 +146,7 @@ class DanmuMsgInfoSender(
     __7: str
 
 
-class DanmuMsgInfoMedal(
-    msgspec.Struct, array_like=True
-):  # TODO: Complete fields and comments
+class Medal(msgspec.Struct, array_like=True):  # TODO: Complete fields and comments
     level: int = 0
     """勋章等级"""
     name: str = ""
@@ -171,17 +165,15 @@ class DanmuMsgInfoMedal(
     """勋章渐变色起始色"""
     color_end: int = 0
     """勋章渐变色结束色"""
-    guard_type: int = 0
-    """1: 总督，2: 提督，3: 舰长"""
+    guard_type: Literal[0, 1, 2, 3] = 0
+    """0: 非舰长，1: 总督，2: 提督，3: 舰长"""
     is_lighted: Literal[0, 1] = 0
     """是否点亮勋章"""
     uid: int = 0
     """勋章拥有者 uid"""
 
 
-class DanmuMsgInfoLevel(
-    msgspec.Struct, array_like=True
-):  # TODO: Complete fields and comments
+class Level(msgspec.Struct, array_like=True):  # TODO: Complete fields and comments
     level: int
     """用户等级"""
     __1: int
@@ -191,29 +183,27 @@ class DanmuMsgInfoLevel(
     __4: int
 
 
-class DanmuMsgInfoCheckInfo(msgspec.Struct):  # TODO: Complete comments
+class CheckInfo(msgspec.Struct):  # TODO: Complete comments
     ts: int
     ct: str
 
 
-class DanmuMsgInfo(
-    msgspec.Struct, array_like=True
-):  # TODO: Complete fields and comments
-    meta: DanmuMsgInfoMeta
+class Info(msgspec.Struct, array_like=True):  # TODO: Complete fields and comments
+    meta: Meta
     """弹幕元数据"""
     text: str
     """弹幕内容"""
-    sender: DanmuMsgInfoSender
+    sender: Sender
     """发送者信息"""
-    medal: DanmuMsgInfoMedal
+    medal: Medal
     """勋章信息"""
-    level: DanmuMsgInfoLevel
+    level: Level
     """等级信息"""
     __5: tuple[str, str]
     __6: int
     __7: int
     __8: None
-    check_info: DanmuMsgInfoCheckInfo
+    check_info: CheckInfo
     __10: int
     __11: int
     __12: None
@@ -225,5 +215,5 @@ class DanmuMsgInfo(
 # endregion
 class DanmuMsg(Command):
     cmd: Literal["DANMU_MSG"]
-    info: DanmuMsgInfo
+    info: Info
     """弹幕信息"""
