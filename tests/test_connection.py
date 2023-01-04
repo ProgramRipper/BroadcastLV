@@ -13,7 +13,7 @@ from broadcastlv.command.danmu_msg import (
     ModeInfo,
     Sender,
 )
-from broadcastlv.connection import Connection, ConnectionState
+from broadcastlv.connection import ClientConnection, ConnectionState
 from broadcastlv.event import (
     COMMAND_MAP,
     Auth,
@@ -29,7 +29,7 @@ from broadcastlv.exception import LocalProtocolError, RemoteProtocolError
 
 
 def test_connection():
-    conn = Connection()
+    conn = ClientConnection()
 
     # send auth
     assert (
@@ -186,7 +186,7 @@ def test_connection():
         conn.next_event()
 
     # receive unknown op
-    conn = Connection()
+    conn = ClientConnection()
     conn.send(Auth(8131361))
     conn.receive_data(
         b"\x00\x00\x00\x10\x00\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -196,7 +196,7 @@ def test_connection():
 
 
 def test_connection_connected():
-    conn = Connection()
+    conn = ClientConnection()
 
     # send heartbeat before auth
     assert conn.state == ConnectionState.CONNECTED
@@ -216,7 +216,7 @@ def test_connection_connected():
 
 
 def test_connection_authenticating():
-    conn = Connection()
+    conn = ClientConnection()
     conn.send(Auth(8131361))
 
     # send heartbeat after auth
@@ -244,7 +244,7 @@ def test_connection_authenticating():
 
 
 def test_connection_authenticated():
-    conn = Connection()
+    conn = ClientConnection()
     conn.send(Auth(8131361))
     conn.receive_data(
         b"\x00\x00\x00\x1a\x00\x10\x00\x01\x00\x00\x00\x08\x00\x00\x00\x00"
@@ -282,13 +282,13 @@ def test_connection_authenticated():
 def test_connection_closed():
 
     # active close
-    conn = Connection()
+    conn = ClientConnection()
     assert conn.send(ConnectionClosed()) is None
     assert conn.state == ConnectionState.CLOSED
     conn.send(ConnectionClosed())
 
     # auth failed
-    conn = Connection()
+    conn = ClientConnection()
     conn.send(Auth(8131361))
     conn.receive_data(
         b"\x00\x00\x00\x1a\x00\x10\x00\x01\x00\x00\x00\x08\x00\x00\x00\x00"
@@ -298,7 +298,7 @@ def test_connection_closed():
         conn.next_event()
     assert conn.state == ConnectionState.CLOSED
 
-    conn = Connection()
+    conn = ClientConnection()
 
     # passive close
     conn.receive_data(b"")

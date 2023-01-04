@@ -1,5 +1,5 @@
 from .command import COMMAND_MAP
-from .connection import Connection
+from .connection import ClientConnection
 from .event import (
     Auth,
     AuthResponse,
@@ -17,7 +17,7 @@ __all__ = [
     # command
     "COMMAND_MAP",
     # connection
-    "Connection",
+    "ClientConnection",
     # event
     "Auth",
     "AuthResponse",

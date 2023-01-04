@@ -21,7 +21,7 @@ from .exception import LocalProtocolError, RemoteProtocolError
 from .header import Header, HeaderStruct
 
 __all__ = [
-    "Connection",
+    "ClientConnection",
 ]
 
 
@@ -32,7 +32,7 @@ class ConnectionState(Enum):
     CLOSED = auto()
 
 
-class Connection:
+class ClientConnection:
     state: ConnectionState
     buffer1: bytearray
     buffer2: bytearray
