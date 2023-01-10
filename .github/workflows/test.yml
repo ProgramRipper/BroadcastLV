@@ -27,9 +27,6 @@ jobs:
       - name: Install dependencies
         run: pdm install
       - name: Test
-        run: |
-          pdm run coverage run -m pytest -vv
-          pdm run coverage report
-          pdm run coverage xml
+        run: pdm test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3.1.1

@@ -20,28 +20,19 @@ build-backend = "pdm.pep517.api"
 [tool.pdm]
 include = ["broadcastlv"]
 [tool.pdm.scripts]
-test = { composite = [
-    "coverage erase",
-    "coverage run -m pytest -vv",
-    "coverage report",
-    "coverage html",
-] }
-lint = { composite = [
-    "black .",
-    "isort .",
-] }
+test = "pytest {args}"
+lint = { composite = ["black .", "isort ."] }
 [tool.pdm.dev-dependencies]
 dev = [
     "black~=22.12",
-    "coverage~=7.0",
     "isort~=5.11",
     "pytest~=7.2",
+    "pytest-cov~=4.0",
 ]
 
 [tool.coverage.run]
 branch = true
-source = ["broadcastlv"]
-omit = ["tests/*", "test.py"]
+omit = ["broadcastlv/command/*", "tests/*", "test.py"]
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
@@ -65,16 +56,19 @@ exclude_lines = [
     # Don't complain if code isn't run on some Python versions
     "if sys\\.version_info",
 ]
-partial_branches = [
-    "pragma: worst case"
-]
+partial_branches = ["pragma: worst case"]
 precision = 2
 
 [tool.pytest.ini_options]
-python_files = "tests/*"
-filterwarnings = [
-    "ignore::RuntimeWarning",
+addopts = [
+    "-vv",
+    "--cov=broadcastlv",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
 ]
+python_files = "tests/*"
+filterwarnings = ["ignore::RuntimeWarning"]
 
 [tool.isort]
 profile = "black"
