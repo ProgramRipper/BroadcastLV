@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
+from typing import Literal
 
 if sys.version_info >= (3, 11):
     from typing import Self
@@ -15,6 +16,8 @@ from .command import COMMAND_MAP
 from .util import pascal_to_upper_snake
 
 __all__ = [
+    "EVENT_TO_OP",
+    "OP_TO_EVENT",
     "Auth",
     "AuthResponse",
     "Command",
@@ -86,12 +89,30 @@ class EventStruct(msgspec.Struct):
 assert issubclass(EventStruct, Event)
 
 
-class Command(EventStruct):
+class Command(EventStruct, gc=False):
     cmd: str
 
     def __init_subclass__(cls, *args, **kwargs) -> None:
         super().__init_subclass__(*args, **kwargs)
         COMMAND_MAP[pascal_to_upper_snake(cls.__name__)] = cls
+
+    @classmethod
+    def from_bytes(cls, buffer: bytes) -> Self:
+        self = super().from_bytes(buffer)
+
+        try:
+            if cls is Command and (cls := COMMAND_MAP[self.cmd]) is not Command:
+                self = super(Command, cls).from_bytes(buffer)
+        except KeyError:
+            from warnings import warn
+
+            warn(
+                f"Unknown command: {self.cmd} ({buffer.decode()})",
+                RuntimeWarning,
+            )
+            COMMAND_MAP[self.cmd] = Command
+
+        return self
 
 
 class Auth(EventStruct, omit_defaults=True):
@@ -103,5 +124,22 @@ class Auth(EventStruct, omit_defaults=True):
     key: str | None = None
 
 
-class AuthResponse(EventStruct):
+class AuthResponse(EventStruct, gc=False):
     code: int
+
+
+EVENT_TO_OP: dict[type[Event], Literal[2, 3, 5, 7, 8]] = {
+    Heartbeat: 2,
+    HeartbeatResponse: 3,
+    Command: 5,
+    Auth: 7,
+    AuthResponse: 8,
+}
+
+OP_TO_EVENT: dict[Literal[2, 3, 5, 7, 8], type[Event]] = {
+    2: Heartbeat,
+    3: HeartbeatResponse,
+    5: Command,
+    7: Auth,
+    8: AuthResponse,
+}

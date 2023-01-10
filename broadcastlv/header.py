@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import struct
 import sys
-from typing import Literal, NamedTuple
+from typing import NamedTuple
 
 if sys.version_info >= (3, 11):
     from typing import Self
@@ -22,10 +22,10 @@ class Header(NamedTuple):
     """封包总大小，包括头部和正文"""
     header_size: int
     """头部大小，一般为 16"""
-    protover: Literal[0, 1, 2, 3]
-    """协议版本，0 为不压缩普通包，1 为不压缩心跳和认证包，2 zlib 压缩普通包，3 为 brotli 压缩普通包"""
-    op: Literal[2, 3, 5, 7, 8]
-    """操作码，2 为心跳包，3 为心跳包回复，5 为普通包，7 为认证包，8 为认证包回复"""
+    protover: int
+    """协议版本，0: 不压缩普通包，1: 不压缩心跳和认证包，2: zlib 压缩普通包，3: brotli 压缩普通包"""
+    op: int
+    """操作码，2: 心跳包，3: 心跳包回复，5: 普通包，7: 认证包，8: 认证包回复"""
     seq: int
     """序列号"""
 

@@ -3,8 +3,8 @@ from __future__ import annotations
 import re
 
 __all__ = [
-    "pascal_to_upper_snake",
     "pascal_to_snake",
+    "pascal_to_upper_snake",
 ]
 
 

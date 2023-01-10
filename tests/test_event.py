@@ -27,9 +27,17 @@ def test_heartbeat_response():
 
 
 def test_command():
-    assert Command("COMMAND").cmd == "COMMAND"
-    assert Command.from_bytes(b'{"cmd":"COMMAND"}') == Command("COMMAND")
-    assert bytes(Command("COMMAND")) == b'{"cmd":"COMMAND"}'
+    assert bytes(Command(cmd="COMMAND")) == b'{"cmd":"COMMAND"}'
+    assert (
+        bytes(Command.from_bytes(b'{"cmd":"COMMAND","ignored":"field"}'))
+        == b'{"cmd":"COMMAND"}'
+    )
+    Command.from_bytes(b'{"cmd":"COMMAND"}')
+
+    class Unknown(Command):
+        ...
+
+    assert Command.from_bytes(b'{"cmd":"UNKNOWN"}') == Unknown(cmd="UNKNOWN")
 
 
 def test_auth():

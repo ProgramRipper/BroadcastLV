@@ -1,6 +1,14 @@
 from .command import COMMAND_MAP
-from .connection import ClientConnection
+from .connection import (
+    ClientConnection,
+    Connection,
+    ConnectionRole,
+    ConnectionState,
+    ServerConnection,
+)
 from .event import (
+    EVENT_TO_OP,
+    OP_TO_EVENT,
     Auth,
     AuthResponse,
     Command,
@@ -11,14 +19,20 @@ from .event import (
 )
 from .exception import LocalProtocolError, ProtocolError, RemoteProtocolError
 from .header import Header, HeaderStruct
-from .util import pascal_to_upper_snake
+from .util import pascal_to_snake, pascal_to_upper_snake
 
 __all__ = [
     # command
     "COMMAND_MAP",
     # connection
     "ClientConnection",
+    "Connection",
+    "ConnectionRole",
+    "ConnectionState",
+    "ServerConnection",
     # event
+    "EVENT_TO_OP",
+    "OP_TO_EVENT",
     "Auth",
     "AuthResponse",
     "Command",
@@ -34,5 +48,6 @@ __all__ = [
     "Header",
     "HeaderStruct",
     # util
+    "pascal_to_snake",
     "pascal_to_upper_snake",
 ]

@@ -6,20 +6,25 @@ from typing import TYPE_CHECKING, Any
 from ..util import pascal_to_snake
 
 if TYPE_CHECKING:
-    from ..event import Command
     from .danmu_msg import DanmuMsg
+    from .send_gift import SendGift
 
 __all__ = [
     "COMMAND_MAP",
     "DanmuMsg",
+    "SendGift",
 ]
 
 
 COMMAND_MAP: dict[str, type[Command]] = {}
+from ..event import Command
+
+for cmd in __all__[1:]:
+    COMMAND_MAP[cmd] = Command
 
 
 def __getattr__(name: str) -> Any:
-    if name in __all__:
+    if name in __all__[1:]:
         globals()[name] = getattr(
             import_module(f".{pascal_to_snake(name)}", __package__), name
         )
