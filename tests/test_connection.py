@@ -1,6 +1,6 @@
 import pytest
 
-from broadcastlv.connection import Connection, ConnectionState
+from broadcastlv.connection import Connection, ConnectionState, connect
 from broadcastlv.event import (
     Auth,
     AuthResponse,
@@ -14,7 +14,9 @@ from broadcastlv.exception import LocalProtocolError, RemoteProtocolError
 
 
 def test_init():
-    assert type(Connection()) is Connection
+    assert type(connect()) is Connection
+    with pytest.raises(ValueError, match="Unknown role: 2"):
+        connect(2)  # type: ignore
 
 
 def test_send():

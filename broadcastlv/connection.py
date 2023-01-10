@@ -33,6 +33,7 @@ __all__ = [
     "ConnectionRole",
     "ConnectionState",
     "ServerConnection",
+    "connect",
 ]
 
 
@@ -49,40 +50,16 @@ class ConnectionState(Enum):
 
 
 class Connection:
-    role: ConnectionRole | None
     state: ConnectionState
     buffer1: bytearray
     buffer2: bytearray
-    current: Header | None = None
+    current: Header | None
 
-    @overload
-    def __new__(cls) -> Connection:
-        pass
-
-    @overload
-    def __new__(cls, role: Literal[ConnectionRole.CLIENT]) -> ClientConnection:
-        ...
-
-    @overload
-    def __new__(cls, role: Literal[ConnectionRole.SERVER]) -> ServerConnection:
-        ...
-
-    def __new__(
-        cls, role: ConnectionRole | None = None
-    ) -> Self | ClientConnection | ServerConnection:
-        match role:
-            case ConnectionRole.CLIENT:
-                return super().__new__(ClientConnection)
-            case ConnectionRole.SERVER:
-                return super().__new__(ServerConnection)
-
-        return super().__new__(cls)
-
-    def __init__(self, role: ConnectionRole | None = None) -> None:
-        self.role = role
+    def __init__(self) -> None:
         self.state = ConnectionState.CONNECTED
         self.buffer1 = bytearray()
         self.buffer2 = bytearray()
+        self.current = None
 
     @overload
     def send(self, event: Event) -> bytes:
@@ -212,13 +189,6 @@ class Connection:
 
 
 class ClientConnection(Connection):
-    role: Literal[ConnectionRole.CLIENT]
-
-    def __init__(
-        self, role: Literal[ConnectionRole.CLIENT] = ConnectionRole.CLIENT
-    ) -> None:
-        super().__init__(role)
-
     @overload
     def send(self, event: Heartbeat | Auth) -> bytes:
         ...
@@ -293,13 +263,6 @@ class ClientConnection(Connection):
 
 
 class ServerConnection(Connection):
-    role: Literal[ConnectionRole.SERVER]
-
-    def __init__(
-        self, role: Literal[ConnectionRole.SERVER] = ConnectionRole.SERVER
-    ) -> None:
-        super().__init__(role)
-
     @overload
     def send(self, event: HeartbeatResponse | AuthResponse) -> bytes:
         ...
@@ -376,3 +339,30 @@ class ServerConnection(Connection):
             raise
 
         return event
+
+
+@overload
+def connect(role: Literal[ConnectionRole.CLIENT]) -> ClientConnection:
+    ...
+
+
+@overload
+def connect(role: Literal[ConnectionRole.SERVER]) -> ServerConnection:
+    ...
+
+
+@overload
+def connect(role: None = None) -> Connection:
+    ...
+
+
+def connect(role: ConnectionRole | None = None) -> Connection:
+    match role:
+        case ConnectionRole.CLIENT:
+            return ClientConnection()
+        case ConnectionRole.SERVER:
+            return ServerConnection()
+        case None:
+            return Connection()
+
+    raise ValueError(f"Unknown role: {role}")

@@ -5,6 +5,7 @@ from broadcastlv.connection import (
     ConnectionRole,
     ConnectionState,
     ServerConnection,
+    connect,
 )
 from broadcastlv.event import (
     Auth,
@@ -17,7 +18,7 @@ from broadcastlv.exception import LocalProtocolError, RemoteProtocolError
 
 
 def test_init():
-    assert type(Connection(ConnectionRole.SERVER)) is ServerConnection
+    assert type(connect(ConnectionRole.SERVER)) is ServerConnection
 
 
 def test_send():

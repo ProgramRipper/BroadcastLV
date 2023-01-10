@@ -2,16 +2,16 @@ import pytest
 
 from broadcastlv.connection import (
     ClientConnection,
-    Connection,
     ConnectionRole,
     ConnectionState,
+    connect,
 )
 from broadcastlv.event import Auth, Command, ConnectionClosed, Heartbeat
 from broadcastlv.exception import LocalProtocolError, RemoteProtocolError
 
 
 def test_init():
-    assert type(Connection(ConnectionRole.CLIENT)) is ClientConnection
+    assert type(connect(ConnectionRole.CLIENT)) is ClientConnection
 
 
 def test_send():

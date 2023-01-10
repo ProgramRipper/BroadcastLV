@@ -5,6 +5,7 @@ from .connection import (
     ConnectionRole,
     ConnectionState,
     ServerConnection,
+    connect,
 )
 from .event import (
     EVENT_TO_OP,
@@ -30,6 +31,7 @@ __all__ = [
     "ConnectionRole",
     "ConnectionState",
     "ServerConnection",
+    "connect",
     # event
     "EVENT_TO_OP",
     "OP_TO_EVENT",
