@@ -32,19 +32,22 @@ class EmoticonOptions(
 class VoiceInfo(
     msgspec.Struct, kw_only=True, gc=False
 ):  # TODO: Complete fields and comments
-    file_id: str
-    """语音文件 ID"""
     voice_url: str
     """语音 URL"""
-    file_duration: str = '"'
+    file_format: str
+    """语音文件格式"""
+    text: str
+    file_duration: int
     """语音时长"""
+    file_id: str
+    """语音文件 ID"""
 
 
 class Emot(msgspec.Struct, kw_only=True, gc=False):
     emoticon_id: int
     """表情 ID"""
     emoji: str
-    """表情文本版本（展示时使用，为空时回退到 descript，类似 __str__）"""
+    """表情文本版本（显示时使用，为空时回退到 descript，类似 __str__）"""
     descript: str
     """表情文本表达（发送时使用，类似 __repr__）"""
     url: str
@@ -105,9 +108,9 @@ class ModeInfo(
     @property
     def extra(self) -> Extra:
         """弹幕额外信息，与发送弹幕时返回的 extra 字段相同"""
-        if isinstance(self.__extra, str):
-            self.__extra = msgspec.json.decode(self.__extra.encode(), type=Extra)
-        return self.__extra
+        if isinstance(self._extra, str):
+            self._extra = msgspec.json.decode(self._extra.encode(), type=Extra)
+        return self._extra
 
 
 class ActivityInfo(msgspec.Struct, kw_only=True, gc=False):  # TODO: Complete comments
@@ -120,7 +123,7 @@ class ActivityInfo(msgspec.Struct, kw_only=True, gc=False):  # TODO: Complete co
 class Meta(
     msgspec.Struct, kw_only=True, array_like=True, gc=False
 ):  # TODO: Complete fields and comments
-    __0: int
+    _0: int
     mode: Literal[1, 4, 5]
     """弹幕位置，1: 滚动，4: 顶部，5: 底部"""
     size: int
