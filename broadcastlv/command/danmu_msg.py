@@ -226,7 +226,6 @@ class Info(
     level: Level
     """等级信息"""
     title: tuple[str | None, str] = (None, "")
-        None,
     _6: int
     guard_level: int = 0
     _8: None
