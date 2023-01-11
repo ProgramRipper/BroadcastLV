@@ -11,7 +11,9 @@ __all__ = [
 ]
 
 
-class EmoticonOptions(msgspec.Struct, gc=False):  # TODO: Complete comments
+class EmoticonOptions(
+    msgspec.Struct, kw_only=True, gc=False
+):  # TODO: Complete comments
     bulge_display: int = 0
     """是否突出显示"""
     emoticon_unique: str = ""
@@ -27,7 +29,9 @@ class EmoticonOptions(msgspec.Struct, gc=False):  # TODO: Complete comments
     """表情宽度"""
 
 
-class VoiceInfo(msgspec.Struct, gc=False):  # TODO: Complete fields and comments
+class VoiceInfo(
+    msgspec.Struct, kw_only=True, gc=False
+):  # TODO: Complete fields and comments
     file_id: str
     """语音文件 ID"""
     voice_url: str
@@ -36,7 +40,7 @@ class VoiceInfo(msgspec.Struct, gc=False):  # TODO: Complete fields and comments
     """语音时长"""
 
 
-class Emot(msgspec.Struct, gc=False):
+class Emot(msgspec.Struct, kw_only=True, gc=False):
     emoticon_id: int
     """表情 ID"""
     emoji: str
@@ -92,11 +96,11 @@ class Extra(msgspec.Struct, kw_only=True, gc=False):  # TODO: Complete comments
 
 
 class ModeInfo(
-    msgspec.Struct, rename={"_ModeInfo__extra": "extra"}, gc=False
+    msgspec.Struct, rename={"_extra": "extra"}, kw_only=True, gc=False
 ):  # TODO: Complete comments
     mode: int
     show_player_type: int
-    __extra: Extra | str
+    _extra: Extra | str
 
     @property
     def extra(self) -> Extra:
@@ -106,7 +110,7 @@ class ModeInfo(
         return self.__extra
 
 
-class ActivityInfo(msgspec.Struct, gc=False):  # TODO: Complete comments
+class ActivityInfo(msgspec.Struct, kw_only=True, gc=False):  # TODO: Complete comments
     activity_identity: str
     activity_source: int
     not_show: int
@@ -127,9 +131,9 @@ class Meta(
     """发送时间，单位：微秒"""
     rnd: int | str = 0
     """同发送弹幕的参数 rnd，网页端发送的弹幕此字段为进入直播间的时间，单位：秒"""
-    __6: int
-    __7: str
-    __8: int
+    _6: int
+    _7: str
+    _8: int
     type: Literal[0, 1, 2]
     chat_bubble_type: int
     chat_bubble_color: str
@@ -196,14 +200,14 @@ class Level(
 ):  # TODO: Complete fields and comments
     user_level: int = 0
     """用户等级"""
-    __1: int
-    __2: int
+    _1: int
+    _2: int
     rank: str | int
     """用户等级排名，> 50000 时为字符串 '>50000'，其他时候为 int"""
-    __4: int
+    _4: int
 
 
-class Validation(msgspec.Struct, gc=False):  # TODO: Complete comments
+class Validation(msgspec.Struct, kw_only=True, gc=False):  # TODO: Complete comments
     ts: int = 0
     ct: str = ""
 
@@ -222,19 +226,20 @@ class Info(
     level: Level
     """等级信息"""
     title: tuple[str | None, str] = (None, "")
-    __6: int
+        None,
+    _6: int
     guard_level: int = 0
-    __8: None
+    _8: None
     validation: Validation
-    __10: int
-    __11: int
-    __12: None
-    __13: None
+    _10: int
+    _11: int
+    _12: None
+    _13: None
     lpl: int = 0
-    __15: int
+    _15: int
 
 
-class DanmuMsg(Command, omit_defaults=True, kw_only=True, gc=False):
-    cmd: Literal["DANMU_MSG"]
+class DanmuMsg(Command, kw_only=True, gc=False):
+    cmd: Literal["DANMU_MSG"] = "DANMU_MSG"
     info: Info
     """弹幕信息"""

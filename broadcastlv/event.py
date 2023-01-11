@@ -115,7 +115,7 @@ class Command(EventStruct, gc=False):
         return self
 
 
-class Auth(EventStruct, omit_defaults=True):
+class Auth(EventStruct, omit_defaults=True, gc=False):
     roomid: int
     uid: int | None = None
     protover: int | None = None
