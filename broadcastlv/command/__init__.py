@@ -3,7 +3,7 @@ from __future__ import annotations
 from importlib import import_module
 from typing import TYPE_CHECKING, Any
 
-from ..util import pascal_to_snake
+from ..util import pascal_to_snake, pascal_to_upper_snake
 
 if TYPE_CHECKING:
     from .danmu_msg import DanmuMsg
@@ -20,7 +20,7 @@ COMMAND_MAP: dict[str, type[Command]] = {}
 from ..event import Command
 
 for cmd in __all__[1:]:
-    COMMAND_MAP[cmd] = Command
+    COMMAND_MAP.setdefault(pascal_to_upper_snake(cmd), Command)
 
 
 def __getattr__(name: str) -> Any:
