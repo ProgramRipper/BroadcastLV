@@ -9,9 +9,7 @@ __all__ = [
 ]
 
 
-class EmoticonOptions(
-    msgspec.Struct, kw_only=True, gc=False
-):  # TODO: Complete comments
+class EmoticonOptions(msgspec.Struct, kw_only=True, gc=False):
     bulge_display: Literal[0, 1] = 0
     """是否突出显示"""
     emoticon_unique: str = ""
@@ -27,9 +25,7 @@ class EmoticonOptions(
     """表情宽度"""
 
 
-class VoiceInfo(
-    msgspec.Struct, kw_only=True, gc=False
-):  # TODO: Complete fields and comments
+class VoiceInfo(msgspec.Struct, kw_only=True, gc=False):
     voice_url: str = ""
     """语音 URL"""
     file_format: str = ""
@@ -58,7 +54,7 @@ class Emot(msgspec.Struct, kw_only=True, gc=False):
     """表情唯一标识"""
 
 
-class Extra(msgspec.Struct, kw_only=True, gc=False):  # TODO: Complete comments
+class Extra(msgspec.Struct, kw_only=True, gc=False):
     send_from_me: bool
     """是否为自己发送的弹幕，恒为 False"""
     mode: int
@@ -96,9 +92,7 @@ class Extra(msgspec.Struct, kw_only=True, gc=False):  # TODO: Complete comments
     """emoji 信息，仅当 dm_type 为 0 时有效，键为 Emot.descript"""
 
 
-class ModeInfo(
-    msgspec.Struct, rename={"_extra": "extra"}, kw_only=True, gc=False
-):  # TODO: Complete comments
+class ModeInfo(msgspec.Struct, rename={"_extra": "extra"}, kw_only=True, gc=False):
     mode: int
     show_player_type: int
     _extra: Extra | str
@@ -111,16 +105,14 @@ class ModeInfo(
         return self._extra
 
 
-class ActivityInfo(msgspec.Struct, kw_only=True, gc=False):  # TODO: Complete comments
+class ActivityInfo(msgspec.Struct, kw_only=True, gc=False):
     activity_identity: str
     activity_source: int
     not_show: Literal[0, 1]
     """是否隐藏"""
 
 
-class Meta(
-    msgspec.Struct, kw_only=True, array_like=True, gc=False
-):  # TODO: Complete fields and comments
+class Meta(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     _0: int
     mode: Literal[1, 4, 5]
     """弹幕位置，1: 滚动，4: 顶部，5: 底部"""
@@ -164,9 +156,7 @@ class Meta(
     """活动信息"""
 
 
-class Sender(
-    msgspec.Struct, kw_only=True, array_like=True, gc=False
-):  # TODO: Complete fields and comments
+class Sender(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     uid: int = 0
     """发送者 uid"""
     username: str = ""
@@ -181,9 +171,7 @@ class Sender(
     username_color: str = ""
 
 
-class Medal(
-    msgspec.Struct, kw_only=True, array_like=True, gc=False
-):  # TODO: Complete fields and comments
+class Medal(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     medal_level: int = 0
     """勋章等级"""
     medal_name: str = "--"
@@ -210,9 +198,7 @@ class Medal(
     """勋章拥有者 uid"""
 
 
-class Level(
-    msgspec.Struct, kw_only=True, array_like=True, gc=False
-):  # TODO: Complete fields and comments
+class Level(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     user_level: int = 0
     """用户等级"""
     _1: int
@@ -222,14 +208,12 @@ class Level(
     _4: int
 
 
-class Validation(msgspec.Struct, kw_only=True, gc=False):  # TODO: Complete comments
+class Validation(msgspec.Struct, kw_only=True, gc=False):
     ts: int = 0
     ct: str = ""
 
 
-class Info(
-    msgspec.Struct, kw_only=True, array_like=True, gc=False
-):  # TODO: Complete fields and comments
+class Info(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     meta: Meta
     """弹幕元数据"""
     content: str = ""
