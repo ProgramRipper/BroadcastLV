@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Literal
 
 import msgspec
@@ -14,7 +12,7 @@ __all__ = [
 class EmoticonOptions(
     msgspec.Struct, kw_only=True, gc=False
 ):  # TODO: Complete comments
-    bulge_display: int = 0
+    bulge_display: Literal[0, 1] = 0
     """是否突出显示"""
     emoticon_unique: str = ""
     """表情唯一标识"""
@@ -32,14 +30,14 @@ class EmoticonOptions(
 class VoiceInfo(
     msgspec.Struct, kw_only=True, gc=False
 ):  # TODO: Complete fields and comments
-    voice_url: str
+    voice_url: str = ""
     """语音 URL"""
-    file_format: str
+    file_format: str = ""
     """语音文件格式"""
-    text: str
-    file_duration: int
+    text: str = ""
+    file_duration: int = 0
     """语音时长"""
-    file_id: str
+    file_id: str = ""
     """语音文件 ID"""
 
 
@@ -116,8 +114,8 @@ class ModeInfo(
 class ActivityInfo(msgspec.Struct, kw_only=True, gc=False):  # TODO: Complete comments
     activity_identity: str
     activity_source: int
-    not_show: int
-    """0: 展示，1：不展示"""
+    not_show: Literal[0, 1]
+    """是否隐藏"""
 
 
 class Meta(
@@ -141,11 +139,25 @@ class Meta(
     chat_bubble_type: int
     chat_bubble_color: str
     dm_type: Literal[0, 1, 2, 6]
-    """弹幕类型，0: 文本（有 emoji），1: 表情，2: 语音，6: 文本 + 表情"""
-    emoticon_options: EmoticonOptions | Literal["{}"]
-    """表情选项，仅当 dm_type 为 1 时有效"""
-    voice_info: VoiceInfo | Literal["{}"]
-    """语音信息，仅当 dm_type 为 2 时有效"""
+    """弹幕类型，0: 文本（可能有 emoji），1: 表情，2: 语音，6: 文本 + 表情"""
+    _emoticon_options: EmoticonOptions | Literal["{}"]
+
+    @property
+    def emoticon_options(self) -> EmoticonOptions:
+        """表情选项，仅当 dm_type 为 1 时有效"""
+        if self._emoticon_options == "{}":
+            self._emoticon_options = EmoticonOptions()
+        return self._emoticon_options
+
+    _voice_info: VoiceInfo | Literal["{}"]
+
+    @property
+    def voice_info(self) -> VoiceInfo:
+        """语音信息，仅当 dm_type 为 2 时有效"""
+        if self._voice_info == "{}":
+            self._voice_info = VoiceInfo()
+        return self._voice_info
+
     mode_info: ModeInfo
     """弹幕模式信息"""
     activity_info: ActivityInfo
@@ -184,17 +196,17 @@ class Medal(
     """勋章颜色"""
     special: str = ""
     icon_id: int = 0
-    medal_color_border: int
+    medal_color_border: int = 0
     """勋章边框色"""
-    medal_color_start: int
+    medal_color_start: int = 0
     """勋章渐变色起始色"""
-    medal_color_end: int
+    medal_color_end: int = 0
     """勋章渐变色结束色"""
     guard_level: Literal[0, 1, 2, 3] = 0
-    """大航海等级，0: 非舰长，1: 总督，2: 提督，3: 舰长"""
-    is_light: Literal[0, 1]
+    """同 DanmuMsg.info.guard_level"""
+    is_light: Literal[0, 1] = 0
     """是否点亮勋章"""
-    anchor_id: int
+    anchor_id: int = 0
     """勋章拥有者 uid"""
 
 
@@ -205,7 +217,7 @@ class Level(
     """用户等级"""
     _1: int
     _2: int
-    rank: str | int
+    rank: int | Literal[">50000"]
     """用户等级排名，> 50000 时为字符串 '>50000'，其他时候为 int"""
     _4: int
 
@@ -230,7 +242,8 @@ class Info(
     """等级信息"""
     title: tuple[str | None, str] = (None, "")
     _6: int
-    guard_level: int = 0
+    guard_level: Literal[0, 1, 2, 3] = 0
+    """大航海等级，0: 非舰长，1: 总督，2: 提督，3: 舰长"""
     _8: None
     validation: Validation
     _10: int
