@@ -1,7 +1,6 @@
 import pytest
 
 from broadcastlv.connection import (
-    Connection,
     ConnectionRole,
     ConnectionState,
     ServerConnection,
@@ -117,3 +116,7 @@ def test_next_event():
         match="Connection is not authenticated, but received a Heartbeat",
     ):
         conn.next_event()
+
+    conn = ServerConnection()
+    conn.send(ConnectionClosed())
+    assert conn.next_event() == ConnectionClosed()

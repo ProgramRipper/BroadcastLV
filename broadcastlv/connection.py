@@ -3,7 +3,8 @@ from __future__ import annotations
 import sys
 import zlib
 from enum import Enum, auto
-from typing import Literal, overload
+from itertools import repeat
+from typing import Iterable, Literal, overload
 
 if sys.version_info >= (3, 11):
     from typing import Self
@@ -120,7 +121,7 @@ class Connection:
 
         self.buffer1.extend(data)
 
-    def next_event(self) -> Event | NeedData | ConnectionClosed:
+    def next_event(self) -> Event | NeedData:
         try:
             if self.buffer2:
                 header = Header.from_bytes(self.buffer2)
@@ -132,19 +133,11 @@ class Connection:
 
             if self.current is None:
                 if len(self.buffer1) < HeaderStruct.size:
-                    return (
-                        NeedData(HeaderStruct.size - len(self.buffer1))
-                        if self.state != ConnectionState.CLOSED
-                        else ConnectionClosed()
-                    )
+                    return NeedData(HeaderStruct.size - len(self.buffer1))
                 self.current = Header.from_bytes(self.buffer1)
 
             if len(self.buffer1) < self.current.size:
-                return (
-                    NeedData(self.current.size - len(self.buffer1))
-                    if self.state != ConnectionState.CLOSED
-                    else ConnectionClosed()
-                )
+                return NeedData(self.current.size - len(self.buffer1))
 
             header, self.current = self.current, None
             buffer = self.buffer1[header.header_size : header.size]
@@ -168,11 +161,9 @@ class Connection:
                             )
                 case _:
                     raise RemoteProtocolError(f"Unknown op: {header.op}")
-        except RemoteProtocolError:
-            self.state = ConnectionState.CLOSED
-            raise
         except Exception as e:
-            self.state = ConnectionState.CLOSED
+            if isinstance(e, RemoteProtocolError):
+                raise
             raise RemoteProtocolError from e
 
         del self.buffer1[: header.size]
@@ -242,8 +233,9 @@ class ClientConnection(Connection):
                             f"Authentication failed (code: {code})"
                         )
                     self.state = ConnectionState.AUTHENTICATED
-                case NeedData() | ConnectionClosed():
-                    pass
+                case NeedData():
+                    if self.state == ConnectionState.CLOSED:
+                        event = ConnectionClosed()
                 case _:
                     raise RemoteProtocolError(f"Unknown event: {type(event).__name__}")
         except RemoteProtocolError:
@@ -343,8 +335,9 @@ class ServerConnection(Connection):
                             "Connection is already authenticated, but received a Auth"
                         )
                     self.state = ConnectionState.AUTHENTICATING
-                case NeedData() | ConnectionClosed():
-                    pass
+                case NeedData():
+                    if self.state == ConnectionState.CLOSED:
+                        event = ConnectionClosed()
                 case _:
                     raise RemoteProtocolError(f"Unknown event: {type(event).__name__}")
         except RemoteProtocolError:

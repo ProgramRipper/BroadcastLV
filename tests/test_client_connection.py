@@ -93,3 +93,7 @@ def test_next_event():
         match=r"Authentication failed \(code: 1\)",
     ):
         conn.next_event()
+
+    conn = ClientConnection()
+    conn.send(ConnectionClosed())
+    assert conn.next_event() == ConnectionClosed()

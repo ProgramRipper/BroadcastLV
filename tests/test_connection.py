@@ -1,6 +1,6 @@
 import pytest
 
-from broadcastlv.connection import Connection, ConnectionState, connect
+from broadcastlv.connection import Connection, connect
 from broadcastlv.event import (
     Auth,
     AuthResponse,
@@ -93,7 +93,6 @@ def test_next_event():
     )
     with pytest.raises(RemoteProtocolError, match="Unknown op: 0"):
         conn.next_event()
-    assert conn.state == ConnectionState.CLOSED
 
     conn = Connection()
     conn.receive_data(
@@ -108,4 +107,3 @@ def test_next_event():
     )
     with pytest.raises(RemoteProtocolError):
         conn.next_event()
-    assert conn.state == ConnectionState.CLOSED
