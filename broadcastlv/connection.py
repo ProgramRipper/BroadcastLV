@@ -85,12 +85,9 @@ class Connection:
     ) -> bytes | None:
         match event:
             case ConnectionClosed():
-                self.state = ConnectionState.CLOSED
                 return
-            case _ if self.state == ConnectionState.CLOSED:
-                raise LocalProtocolError("Connection is closed")
             case Command():
-                protover = protover or 0
+                protover = 0
                 op = 5
             case Event() if op := EVENT_TO_OP.get(type(event)):
                 protover = 1
@@ -99,25 +96,19 @@ class Connection:
             case _:
                 raise LocalProtocolError(f"Unknown event: {type(event).__name__}")
 
-        return self._send(bytes(event), protover, op)
-
-    def _send(self, event: bytes, protover: int, op: int):
-        match protover:
-            case 2:
-                event = zlib.compress(event)
-            case 3:
-                event = brotli.compress(event)
-
-        header = bytes(
-            Header(
-                HeaderStruct.size + len(event),
-                HeaderStruct.size,
-                protover,
-                op,
-                0,
+        event = bytes(event)
+        return (
+            bytes(
+                Header(
+                    HeaderStruct.size + len(event),
+                    HeaderStruct.size,
+                    protover,
+                    op,
+                    0,
+                )
             )
+            + event
         )
-        return header + event
 
     def receive_data(self, data: bytes) -> None:
         if not data:
@@ -227,7 +218,7 @@ class ClientConnection(Connection):
             case _:
                 raise LocalProtocolError(f"Unknown event: {type(event).__name__}")
 
-        return self._send(bytes(event), protover, op)
+        return super().send(bytes(event), protover, op)
 
     def next_event(
         self,
@@ -297,7 +288,7 @@ class ServerConnection(Connection):
                 protover = 1
                 op = 3
             case Command():
-                protover = protover or 0
+                protover = 0
                 op = 5
             case AuthResponse(code):
                 if self.state != ConnectionState.AUTHENTICATING:
@@ -312,7 +303,29 @@ class ServerConnection(Connection):
             case _:
                 raise LocalProtocolError(f"Unknown event: {type(event).__name__}")
 
-        return self._send(bytes(event), protover, op)
+        return super().send(bytes(event), protover, op)
+
+    def multi_send(
+        self, events: Iterable[Command | bytes], protover: Literal[2, 3] = 3
+    ) -> bytes:
+        if self.state != ConnectionState.AUTHENTICATED:
+            raise LocalProtocolError("Connection is not authenticated")
+
+        match protover:
+            case 2:
+                compress = zlib.compress
+            case 3:
+                compress = brotli.compress
+            case _:
+                raise LocalProtocolError(f"Unknown protover: {protover}")
+
+        return super().send(
+            compress(
+                b"".join(map(super().send, map(bytes, events), repeat(0), repeat(5)))
+            ),
+            protover,
+            5,
+        )
 
     def next_event(self) -> Heartbeat | Auth | NeedData | ConnectionClosed:
         try:

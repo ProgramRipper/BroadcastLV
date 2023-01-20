@@ -49,21 +49,7 @@ def test_send():
     with pytest.raises(LocalProtocolError, match="Unknown event: object"):
         conn.send(object())  # type: ignore
 
-    cmd = conn.send(Command("TEST"))
-    assert (
-        conn.send(cmd, 2, 5)
-        == b"\x00\x00\x001\x00\x10\x00\x02\x00\x00\x00\x05\x00\x00\x00\x00x\x9cc``\x90c\x10`\x00\x01V\x10Q\xad\x94\x9c\x9b\xa2d\xa5\x14\xe2\x1a\x1c\xa2T\x0b\x00%0\x04b"
-    )
-    assert (
-        conn.send(cmd, 3, 5)
-        == b'\x00\x00\x002\x00\x10\x00\x03\x00\x00\x00\x05\x00\x00\x00\x00\x8b\x0e\x80\x00\x00\x00\x1e\x00\x10\x00\x00\x00\x00\x00\x05\x00\x00\x00\x00{"cmd":"TEST"}\x03'
-    )
-
     assert conn.send(ConnectionClosed()) is None
-    assert conn.state == ConnectionState.CLOSED
-
-    with pytest.raises(LocalProtocolError, match="Connection is closed"):
-        conn.send(Heartbeat(b"test"))
 
 
 def test_receive_data():
