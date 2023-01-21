@@ -3,6 +3,7 @@ from typing import Literal
 import msgspec
 
 from ..event import Command
+from ..util import add_from_bytes
 
 __all__ = [
     "DanmuMsg",
@@ -238,6 +239,7 @@ class Info(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     _15: int
 
 
+@add_from_bytes
 class DanmuMsg(Command, kw_only=True, gc=False):
     cmd: Literal["DANMU_MSG"] = "DANMU_MSG"
     info: Info

@@ -13,7 +13,7 @@ else:  # pragma: no cover
 import msgspec
 
 from .command import COMMAND_MAP
-from .util import pascal_to_upper_snake
+from .util import add_from_bytes, pascal_to_upper_snake
 
 __all__ = [
     "EVENT_TO_OP",
@@ -45,7 +45,7 @@ class NeedData:
 class Event(metaclass=ABCMeta):
     @classmethod
     @abstractmethod
-    def from_bytes(cls, buffer: bytes) -> Self:
+    def from_bytes(cls, data: bytes) -> Self:
         raise NotImplementedError
 
     @abstractmethod
@@ -58,8 +58,8 @@ class Heartbeat(Event):
     content: bytes
 
     @classmethod
-    def from_bytes(cls, buffer: bytes) -> Self:
-        return Heartbeat(buffer)
+    def from_bytes(cls, data: bytes) -> Self:
+        return Heartbeat(data)
 
     def __bytes__(self) -> bytes:
         return self.content
@@ -71,24 +71,26 @@ class HeartbeatResponse(Event):
     content: bytes
 
     @classmethod
-    def from_bytes(cls, buffer: bytes) -> Self:
+    def from_bytes(cls, data: bytes) -> Self:
         return HeartbeatResponse(
-            int.from_bytes(buffer[:4], "big", signed=False),
-            buffer[4:],
+            int.from_bytes(data[:4], "big", signed=False), data[4:]
         )
 
     def __bytes__(self) -> bytes:
         return self.popularity.to_bytes(4, "big", signed=False) + self.content
 
 
+_encoder = msgspec.json.Encoder().encode
+
+
 @Event.register
 class EventStruct(msgspec.Struct):
     @classmethod
-    def from_bytes(cls, buffer: bytes) -> Self:
-        return msgspec.json.decode(buffer, type=cls)
+    def from_bytes(cls, data: bytes) -> Self:
+        return msgspec.json.decode(data, type=cls)
 
     def __bytes__(self) -> bytes:
-        return msgspec.json.encode(self)
+        return _encoder(self)
 
 
 assert issubclass(EventStruct, Event)
@@ -102,24 +104,30 @@ class Command(EventStruct, gc=False):
         COMMAND_MAP[pascal_to_upper_snake(cls.__name__)] = cls
 
     @classmethod
-    def from_bytes(cls, buffer: bytes) -> Self:
-        self = super().from_bytes(buffer)
+    def from_bytes(cls, data: bytes) -> Self:
+        if cls is Command:
+            self = _command_decoder(data)
+            try:
+                if (cls := COMMAND_MAP[self.cmd]) is not Command:
+                    self = cls.from_bytes(data)
+            except KeyError:
+                from warnings import warn
 
-        try:
-            if cls is Command and (cls := COMMAND_MAP[self.cmd]) is not Command:
-                self = super(Command, cls).from_bytes(buffer)
-        except KeyError:
-            from warnings import warn
-
-            warn(
-                f"Unknown command: {self.cmd} ({buffer.decode()})",
-                RuntimeWarning,
-            )
-            COMMAND_MAP[self.cmd] = Command
+                warn(
+                    f"Unknown command: {self.cmd} ({data.decode()})",
+                    RuntimeWarning,
+                )
+                COMMAND_MAP[self.cmd] = Command
+        else:
+            self = super(Command, cls).from_bytes(data)
 
         return self
 
 
+_command_decoder = msgspec.json.Decoder(Command).decode
+
+
+@add_from_bytes
 class Auth(EventStruct, omit_defaults=True, gc=False):
     roomid: int
     uid: int | None = None
@@ -129,6 +137,7 @@ class Auth(EventStruct, omit_defaults=True, gc=False):
     key: str | None = None
 
 
+@add_from_bytes
 class AuthResponse(EventStruct, gc=False):
     code: int
 
