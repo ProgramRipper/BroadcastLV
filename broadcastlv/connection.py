@@ -67,10 +67,6 @@ class Connection:
         ...
 
     @overload
-    def send(self, event: Command, protover: int = 0) -> bytes:
-        ...
-
-    @overload
     def send(self, event: bytes, protover: int, op: int) -> bytes:
         ...
 
@@ -112,13 +108,6 @@ class Connection:
         )
 
     def receive_data(self, data: bytes) -> None:
-        if not data:
-            self.state = ConnectionState.CLOSED
-            return
-
-        if self.state == ConnectionState.CLOSED:
-            raise RemoteProtocolError("Connection is closed")
-
         self.buffer1.extend(data)
 
     def next_event(self) -> Event | NeedData:
@@ -211,6 +200,16 @@ class ClientConnection(Connection):
 
         return super().send(bytes(event), protover, op)
 
+    def receive_data(self, data: bytes) -> None:
+        if not data:
+            self.state |= ConnectionState.CLOSED
+            return
+
+        if self.state & ConnectionState.CLOSED:
+            raise RemoteProtocolError("Connection is closed")
+
+        super().receive_data(data)
+
     def next_event(
         self,
     ) -> HeartbeatResponse | Command | AuthResponse | NeedData | ConnectionClosed:
@@ -247,11 +246,7 @@ class ClientConnection(Connection):
 
 class ServerConnection(Connection):
     @overload
-    def send(self, event: HeartbeatResponse | AuthResponse) -> bytes:
-        ...
-
-    @overload
-    def send(self, event: Command, protover: int = 0) -> bytes:
+    def send(self, event: HeartbeatResponse | AuthResponse | Command) -> bytes:
         ...
 
     @overload
@@ -318,6 +313,16 @@ class ServerConnection(Connection):
             protover,
             5,
         )
+
+    def receive_data(self, data: bytes) -> None:
+        if not data:
+            self.state |= ConnectionState.CLOSED
+            return
+
+        if self.state & ConnectionState.CLOSED:
+            raise RemoteProtocolError("Connection is closed")
+
+        super().receive_data(data)
 
     def next_event(self) -> Heartbeat | Auth | NeedData | ConnectionClosed:
         try:

@@ -78,6 +78,14 @@ def test_multi_send():
         conn.multi_send([Command("TEST")], 4)  # type: ignore
 
 
+def test_receive_data():
+    conn = ServerConnection()
+    conn.receive_data(b"")
+    conn.receive_data(b"")
+    with pytest.raises(RemoteProtocolError, match="Connection is closed"):
+        conn.receive_data(b"test")
+
+
 def test_next_event():
     conn = ServerConnection()
     conn.receive_data(b"\x00\x00\x00S\x00\x10\x00\x01\x00\x00\x00\x07\x00\x00\x00\x00")

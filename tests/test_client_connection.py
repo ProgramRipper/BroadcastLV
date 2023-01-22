@@ -43,6 +43,14 @@ def test_send():
         conn.send(Command("TEST"))  # type: ignore
 
 
+def test_receive_data():
+    conn = ClientConnection()
+    conn.receive_data(b"")
+    conn.receive_data(b"")
+    with pytest.raises(RemoteProtocolError, match="Connection is closed"):
+        conn.receive_data(b"test")
+
+
 def test_next_event():
     conn = ClientConnection()
     conn.send(Auth(0))

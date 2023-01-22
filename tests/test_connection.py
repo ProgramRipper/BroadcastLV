@@ -56,10 +56,6 @@ def test_receive_data():
     conn = Connection()
 
     conn.receive_data(b"test")
-    conn.receive_data(b"")
-    conn.receive_data(b"")
-    with pytest.raises(RemoteProtocolError, match="Connection is closed"):
-        conn.receive_data(b"test")
 
 
 def test_next_event():
