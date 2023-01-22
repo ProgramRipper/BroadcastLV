@@ -24,7 +24,7 @@ def test_send():
     conn = ServerConnection()
 
     conn.send(ConnectionClosed())
-    assert conn.state == ConnectionState.CLOSED
+    assert conn.state & ConnectionState.CLOSED
 
     with pytest.raises(LocalProtocolError, match="Connection is closed"):
         conn.send(HeartbeatResponse(0, b""))
@@ -34,17 +34,20 @@ def test_send():
     with pytest.raises(LocalProtocolError, match="Connection is not authenticated"):
         conn.send(HeartbeatResponse(0, b""))
 
+    with pytest.raises(LocalProtocolError, match="Connection is not authenticating"):
+        conn.send(AuthResponse(0))
+
     conn.receive_data(
         b'\x00\x00\x00S\x00\x10\x00\x01\x00\x00\x00\x07\x00\x00\x00\x00{"roomid":1,"uid":2,"protover":3,"platform":"4","type":5,"key":"6"}'
     )
     conn.next_event()
     conn.send(AuthResponse(0))
-    assert conn.state == ConnectionState.AUTHENTICATED
+    assert conn.state & ConnectionState.AUTHENTICATED
 
     conn.send(HeartbeatResponse(0, b""))
     conn.send(Command("TEST"))
     conn.send(b"", 0, 0)
-    with pytest.raises(LocalProtocolError, match="Connection is not authenticating"):
+    with pytest.raises(LocalProtocolError, match="Connection is already authenticated"):
         conn.send(AuthResponse(0))
     with pytest.raises(LocalProtocolError, match="Unknown event: Auth"):
         conn.send(Auth(0))  # type: ignore
@@ -55,7 +58,7 @@ def test_send():
     )
     conn.next_event()
     conn.send(AuthResponse(1))
-    assert conn.state == ConnectionState.CLOSED
+    assert conn.state & ConnectionState.CLOSED
 
 
 def test_multi_send():
@@ -96,12 +99,12 @@ def test_next_event():
         b"\x00\x00\x00\x18\x00\x10\x00\x01\x00\x00\x00\x03\x00\x00\x00\x00\x00\x01\xbfRtest"
     )
     conn.next_event()
-    assert conn.state == ConnectionState.AUTHENTICATING
+    assert conn.state & ConnectionState.AUTHENTICATING
     conn.send(AuthResponse(0))
     conn.next_event()
     with pytest.raises(RemoteProtocolError, match="Unknown event: HeartbeatResponse"):
         conn.next_event()
-    assert conn.state == ConnectionState.CLOSED
+    assert conn.state & ConnectionState.CLOSED
 
     conn = ServerConnection()
     conn.receive_data(
@@ -109,6 +112,19 @@ def test_next_event():
         b'\x00\x00\x00S\x00\x10\x00\x01\x00\x00\x00\x07\x00\x00\x00\x00{"roomid":1,"uid":2,"protover":3,"platform":"4","type":5,"key":"6"}'
     )
     conn.next_event()
+    with pytest.raises(
+        RemoteProtocolError,
+        match="Connection is already authenticating, but received a Auth",
+    ):
+        conn.next_event()
+
+    conn = ServerConnection()
+    conn.receive_data(
+        b'\x00\x00\x00S\x00\x10\x00\x01\x00\x00\x00\x07\x00\x00\x00\x00{"roomid":1,"uid":2,"protover":3,"platform":"4","type":5,"key":"6"}'
+        b'\x00\x00\x00S\x00\x10\x00\x01\x00\x00\x00\x07\x00\x00\x00\x00{"roomid":1,"uid":2,"protover":3,"platform":"4","type":5,"key":"6"}'
+    )
+    conn.next_event()
+    conn.send(AuthResponse(0))
     with pytest.raises(
         RemoteProtocolError,
         match="Connection is already authenticated, but received a Auth",
