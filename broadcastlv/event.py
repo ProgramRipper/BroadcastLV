@@ -48,6 +48,9 @@ class Event(metaclass=ABCMeta):
     def from_bytes(cls, data: bytes) -> Self:
         raise NotImplementedError
 
+    def into_buffer(self, buffer: bytearray, offset: int = 0):
+        buffer[offset:] = bytes(self)
+
     @abstractmethod
     def __bytes__(self) -> bytes:
         raise NotImplementedError
@@ -80,7 +83,7 @@ class HeartbeatResponse(Event):
         return self.popularity.to_bytes(4, "big", signed=False) + self.content
 
 
-_encoder = msgspec.json.Encoder().encode
+_encoder = msgspec.json.Encoder()
 
 
 @Event.register
@@ -89,8 +92,11 @@ class EventStruct(msgspec.Struct):
     def from_bytes(cls, data: bytes) -> Self:
         return msgspec.json.decode(data, type=cls)
 
+    def into_buffer(self, buffer: bytearray, offset: int = 0):
+        _encoder.encode_into(self, buffer, offset)
+
     def __bytes__(self) -> bytes:
-        return _encoder(self)
+        return _encoder.encode(self)
 
 
 assert issubclass(EventStruct, Event)
@@ -106,7 +112,7 @@ class Command(EventStruct, gc=False):
     @classmethod
     def from_bytes(cls, data: bytes) -> Self:
         if cls is Command:
-            self = _command_decoder(data)
+            self = _command_decode(data)
             try:
                 if (cls := COMMAND_MAP[self.cmd]) is not Command:
                     self = cls.from_bytes(data)
@@ -124,7 +130,7 @@ class Command(EventStruct, gc=False):
         return self
 
 
-_command_decoder = msgspec.json.Decoder(Command).decode
+_command_decode = msgspec.json.Decoder(Command).decode
 
 
 @add_from_bytes

@@ -4,6 +4,7 @@ import sys
 import zlib
 from enum import Enum, Flag, auto
 from itertools import repeat
+from operator import length_hint
 from typing import Iterable, Literal, overload
 
 if sys.version_info >= (3, 11):
@@ -86,26 +87,26 @@ class Connection:
             case Command():
                 protover = 0
                 op = 5
+                data = bytearray(2048)
+                event.into_buffer(data, HeaderStruct.size)
             case Event() if op := EVENT_TO_OP.get(type(event)):
                 protover = 1
+                data = bytearray(256)
+                event.into_buffer(data, HeaderStruct.size)
             case bytes() if protover is not None and op is not None:
-                pass
+                data = bytearray(HeaderStruct.size + len(event))
+                data[HeaderStruct.size :] = event
             case _:
                 raise LocalProtocolError(f"Unknown event: {type(event).__name__}")
 
-        event = bytes(event)
-        return (
-            bytes(
-                Header(
-                    HeaderStruct.size + len(event),
-                    HeaderStruct.size,
-                    protover,
-                    op,
-                    0,
-                )
-            )
-            + event
-        )
+        Header(
+            len(data),
+            HeaderStruct.size,
+            protover,
+            op,
+            0,
+        ).into_buffer(data)
+        return data
 
     def receive_data(self, data: bytes) -> None:
         self.buffer1.extend(data)
@@ -187,18 +188,16 @@ class ClientConnection(Connection):
             case Heartbeat():
                 if not self.state & ConnectionState.AUTHENTICATED:
                     raise LocalProtocolError("Connection is not authenticated")
-                op = 2
             case Auth():
                 if self.state & ConnectionState.AUTHENTICATING:
                     raise LocalProtocolError("Connection is already authenticated")
-                op = 7
                 self.state |= ConnectionState.AUTHENTICATING
             case bytes() if protover is not None and op is not None:
                 pass
             case _:
                 raise LocalProtocolError(f"Unknown event: {type(event).__name__}")
 
-        return super().send(bytes(event), protover, op)
+        return super().send(event, protover, op)  # type: ignore
 
     def receive_data(self, data: bytes) -> None:
         if not data:
@@ -275,12 +274,6 @@ class ServerConnection(Connection):
                 raise LocalProtocolError("Connection is closed")
             case HeartbeatResponse() | Command() if not self.state & ConnectionState.AUTHENTICATED:
                 raise LocalProtocolError("Connection is not authenticated")
-            case HeartbeatResponse():
-                protover = 1
-                op = 3
-            case Command():
-                protover = 0
-                op = 5
             case AuthResponse(code):
                 if self.state & ConnectionState.AUTHENTICATED:
                     raise LocalProtocolError("Connection is already authenticated")
@@ -289,14 +282,12 @@ class ServerConnection(Connection):
                 self.state |= ConnectionState.AUTHENTICATED
                 if code:
                     self.state |= ConnectionState.CLOSED
-                protover = 1
-                op = 8
             case bytes() if protover is not None and op is not None:
                 pass
             case _:
                 raise LocalProtocolError(f"Unknown event: {type(event).__name__}")
 
-        return super().send(bytes(event), protover, op)
+        return super().send(event, protover, op)  # type: ignore
 
     def multi_send(
         self, events: Iterable[Command | bytes], protover: Literal[2, 3] = 3
@@ -312,13 +303,24 @@ class ServerConnection(Connection):
             case _:
                 raise LocalProtocolError(f"Unknown protover: {protover}")
 
-        return super().send(
-            compress(
-                b"".join(map(super().send, map(bytes, events), repeat(0), repeat(5)))
-            ),
-            protover,
-            5,
-        )
+        data = bytearray(length_hint(events, 1) * 2048)
+        offset = 0
+        for event in events:
+            match event:
+                case Command():
+                    event.into_buffer(data, offset + HeaderStruct.size)
+                case bytes():
+                    data[offset + HeaderStruct.size :] = event
+                case _:
+                    raise LocalProtocolError(f"Unknown event: {type(event).__name__}")
+            Header(len(data) - offset, HeaderStruct.size, 0, 5, 0).into_buffer(
+                data, offset
+            )
+
+        data[HeaderStruct.size :] = compress(data)
+        Header(len(data), HeaderStruct.size, protover, 5, 0).into_buffer(data)
+
+        return data
 
     def receive_data(self, data: bytes) -> None:
         if not data:

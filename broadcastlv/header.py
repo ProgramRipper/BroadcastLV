@@ -33,5 +33,8 @@ class Header(NamedTuple):
     def from_bytes(cls, buffer: bytes, offset: int = 0) -> Self:
         return cls(*HeaderStruct.unpack_from(buffer, offset))
 
+    def into_buffer(self, buffer: bytearray, offset: int = 0) -> None:
+        HeaderStruct.pack_into(buffer, offset, *self)
+
     def __bytes__(self) -> bytes:
         return HeaderStruct.pack(*self)
