@@ -128,7 +128,7 @@ class Meta(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     _6: int
     _7: str
     _8: int
-    type: Literal[0, 1, 2]
+    type: Literal[0, 1, 2, 7]
     chat_bubble_type: int
     chat_bubble_color: str
     dm_type: Literal[0, 1, 2, 6]
