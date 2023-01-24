@@ -183,13 +183,15 @@ class ClientConnection(Connection):
             case ConnectionClosed():
                 self.state |= ConnectionState.CLOSED
                 return
-            case _ if self.state & ConnectionState.CLOSED:
+            case _ if ConnectionState.CLOSED in self.state:
                 raise LocalProtocolError("Connection is closed")
             case Heartbeat():
-                if not self.state & ConnectionState.AUTHENTICATED:
+                if (  # pragma: worst case  # FIXME: coverage.py incorrectly assumes that this line is partially run
+                    ConnectionState.AUTHENTICATED not in self.state
+                ):
                     raise LocalProtocolError("Connection is not authenticated")
             case Auth():
-                if self.state & ConnectionState.AUTHENTICATING:
+                if ConnectionState.AUTHENTICATING in self.state:
                     raise LocalProtocolError("Connection is already authenticated")
                 self.state |= ConnectionState.AUTHENTICATING
             case bytes() if protover is not None and op is not None:
@@ -204,7 +206,7 @@ class ClientConnection(Connection):
             self.state |= ConnectionState.CLOSED
             return
 
-        if self.state & ConnectionState.CLOSED:
+        if ConnectionState.CLOSED in self.state:
             raise RemoteProtocolError("Connection is closed")
 
         super().receive_data(data)
@@ -216,17 +218,17 @@ class ClientConnection(Connection):
             match event := super().next_event():
                 case HeartbeatResponse() | Command():
                     if (  # pragma: worst case  # FIXME: coverage.py incorrectly assumes that this line is partially run
-                        not self.state & ConnectionState.AUTHENTICATED
+                        ConnectionState.AUTHENTICATED not in self.state
                     ):
                         raise RemoteProtocolError(
                             f"Connection is not authenticated, but received a {type(event).__name__}"
                         )
                 case AuthResponse(code):
-                    if self.state & ConnectionState.AUTHENTICATED:
+                    if ConnectionState.AUTHENTICATED in self.state:
                         raise RemoteProtocolError(
                             "Connection is already authenticated, but received a AuthResponse"
                         )
-                    elif not self.state & ConnectionState.AUTHENTICATING:
+                    elif ConnectionState.AUTHENTICATING not in self.state:
                         raise RemoteProtocolError(
                             "Connection is not authenticating, but received a AuthResponse"
                         )
@@ -236,7 +238,7 @@ class ClientConnection(Connection):
                         )
                     self.state |= ConnectionState.AUTHENTICATED
                 case NeedData():
-                    if self.state & ConnectionState.CLOSED:
+                    if ConnectionState.CLOSED in self.state:
                         event = ConnectionClosed()
                 case _:
                     raise RemoteProtocolError(f"Unknown event: {type(event).__name__}")
@@ -270,17 +272,22 @@ class ServerConnection(Connection):
             case ConnectionClosed():
                 self.state |= ConnectionState.CLOSED
                 return
-            case _ if self.state & ConnectionState.CLOSED:
+            case _ if ConnectionState.CLOSED in self.state:
                 raise LocalProtocolError("Connection is closed")
-            case HeartbeatResponse() | Command() if not self.state & ConnectionState.AUTHENTICATED:
-                raise LocalProtocolError("Connection is not authenticated")
+            case HeartbeatResponse() | Command():
+                if (  # pragma: worst case  # FIXME: coverage.py incorrectly assumes that this line is partially run
+                    ConnectionState.AUTHENTICATED not in self.state
+                ):
+                    raise LocalProtocolError("Connection is not authenticated")
             case AuthResponse(code):
-                if self.state & ConnectionState.AUTHENTICATED:
+                if ConnectionState.AUTHENTICATED in self.state:
                     raise LocalProtocolError("Connection is already authenticated")
-                elif not self.state & ConnectionState.AUTHENTICATING:
+                elif ConnectionState.AUTHENTICATING not in self.state:
                     raise LocalProtocolError("Connection is not authenticating")
                 self.state |= ConnectionState.AUTHENTICATED
-                if code:
+                if (  # pragma: worst case  # FIXME: coverage.py incorrectly assumes that this line is partially run
+                    code
+                ):
                     self.state |= ConnectionState.CLOSED
             case bytes() if protover is not None and op is not None:
                 pass
@@ -292,7 +299,7 @@ class ServerConnection(Connection):
     def multi_send(
         self, events: Iterable[Command | bytes], protover: Literal[2, 3] = 3
     ) -> bytes:
-        if not self.state & ConnectionState.AUTHENTICATED:
+        if ConnectionState.AUTHENTICATED not in self.state:
             raise LocalProtocolError("Connection is not authenticated")
 
         match protover:
@@ -327,7 +334,7 @@ class ServerConnection(Connection):
             self.state |= ConnectionState.CLOSED
             return
 
-        if self.state & ConnectionState.CLOSED:
+        if ConnectionState.CLOSED in self.state:
             raise RemoteProtocolError("Connection is closed")
 
         super().receive_data(data)
@@ -337,23 +344,23 @@ class ServerConnection(Connection):
             match event := super().next_event():
                 case Heartbeat():
                     if (  # pragma: worst case  # FIXME: coverage.py incorrectly assumes that this line is partially run
-                        not self.state & ConnectionState.AUTHENTICATED
+                        ConnectionState.AUTHENTICATED not in self.state
                     ):
                         raise RemoteProtocolError(
                             "Connection is not authenticated, but received a Heartbeat"
                         )
                 case Auth():
-                    if self.state & ConnectionState.AUTHENTICATED:
+                    if ConnectionState.AUTHENTICATED in self.state:
                         raise RemoteProtocolError(
                             "Connection is already authenticated, but received a Auth"
                         )
-                    elif self.state & ConnectionState.AUTHENTICATING:
+                    elif ConnectionState.AUTHENTICATING in self.state:
                         raise RemoteProtocolError(
                             "Connection is already authenticating, but received a Auth"
                         )
                     self.state |= ConnectionState.AUTHENTICATING
                 case NeedData():
-                    if self.state & ConnectionState.CLOSED:
+                    if ConnectionState.CLOSED in self.state:
                         event = ConnectionClosed()
                 case _:
                     raise RemoteProtocolError(f"Unknown event: {type(event).__name__}")
