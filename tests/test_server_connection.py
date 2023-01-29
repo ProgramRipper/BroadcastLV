@@ -69,13 +69,16 @@ def test_multi_send():
 
     conn.state = ConnectionState.AUTHENTICATED
     assert (
-        conn.multi_send([Command("TEST")], 2)
+        conn.multi_send([Command("TEST"), b'{"cmd":"TEST"}'], 2)
         == b"\x00\x00\x001\x00\x10\x00\x02\x00\x00\x00\x05\x00\x00\x00\x00x\x9cc``\x90c\x10`\x00\x01V\x10Q\xad\x94\x9c\x9b\xa2d\xa5\x14\xe2\x1a\x1c\xa2T\x0b\x00%0\x04b"
     )
     assert (
-        conn.multi_send([Command("TEST")], 3)
+        conn.multi_send([Command("TEST"), b'{"cmd":"TEST"}'], 3)
         == b'\x00\x00\x002\x00\x10\x00\x03\x00\x00\x00\x05\x00\x00\x00\x00\x8b\x0e\x80\x00\x00\x00\x1e\x00\x10\x00\x00\x00\x00\x00\x05\x00\x00\x00\x00{"cmd":"TEST"}\x03'
     )
+
+    with pytest.raises(LocalProtocolError, match="Unknown event: HeartbeatResponse"):
+        conn.multi_send([HeartbeatResponse(0, b"")])  # type: ignore
 
     with pytest.raises(LocalProtocolError, match="Unknown protover: 4"):
         conn.multi_send([Command("TEST")], 4)  # type: ignore
