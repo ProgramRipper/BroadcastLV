@@ -177,9 +177,9 @@ class Medal(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     """勋章等级"""
     medal_name: str = "--"
     """勋章名称"""
-    anchor_username: str = "--"
+    anchor_uname: str = "--"
     """勋章拥有者用户名"""
-    short_room_id: int = 0
+    anchor_roomid: int = 0
     """勋章拥有者房间号"""
     medal_color: int | None = None
     """勋章颜色"""
@@ -193,9 +193,9 @@ class Medal(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     """勋章渐变色结束色"""
     guard_level: Literal[0, 1, 2, 3] = 0
     """同 DanmuMsg.info.guard_level"""
-    is_light: Literal[0, 1] = 0
+    is_lighted: Literal[0, 1] = 0
     """是否点亮勋章"""
-    anchor_id: int = 0
+    target_id: int = 0
     """勋章拥有者 uid"""
 
 
