@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package bilibili.live.gift.v1;
+
+message SendGiftBroadcastProtobuf {
+  int64 uid = 1;
+  string uname = 2;
+  string face = 3;
+  string name_color = 4;
+  int64 guard_level = 5;
+  int64 svga_block = 6;
+  SendMasterProtobuf send_master = 7;
+  MedalInfoProtobuf medal_info = 8;
+  BlindGiftProtobuf blind_gift = 9;
+  repeated GiftItemProtobuf gift_list = 10;
+  bool switch = 11;
+}
+
+message GiftItemProtobuf {
+  int64 gift_id = 1;
+  string gift_name = 2;
+  int64 num = 3;
+  int64 demarcation = 4;
+  int64 price = 5;
+  int64 discount_price = 6;
+  int64 total_coin = 7;
+  string coin_type = 8;
+  string tid = 9;
+  int64 timestamp = 10;
+  int64 super_batch_gift_num = 11;
+  string batch_combo_id = 12;
+  int64 combo_resources_id = 13;
+  int64 combo_total_coin = 14;
+  int64 combo_stay_time = 15;
+  float magnification = 16;
+  bool show_batch_combo_send = 17;
+  string action = 18;
+  int64 effect_block = 19;
+  int64 is_special_batch = 20;
+  int64 float_sc_resouce_id = 21;
+  string tag_name = 22;
+  int64 crit_prob = 23;
+  int64 rcost = 24;
+  int64 test = 25;
+  int64 face_effect_type = 26;
+  int64 face_effect_id = 27;
+  bool is_naming = 28;
+  ReceiveUserInfoProtobuf receive_user_info = 29;
+  bool is_join_receiver = 30;
+}
+
+message ReceiveUserInfoProtobuf {
+  string uname = 1;
+  int64 uid = 2;
+}
+
+message SendMasterProtobuf {
+  int64 uid = 1;
+  string uname = 2;
+}
+
+message BlindGiftProtobuf {
+  int64 blind_gift_config_id = 1;
+  int64 original_gift_id = 2;
+  string original_gift_name = 3;
+  int64 from_ = 4;
+  string gift_action = 5;
+}
+
+message MedalInfoProtobuf {
+  int64 target_id = 1;
+  string special = 2;
+  string anchor_uname = 3;
+  int64 anchor_roomid = 4;
+  int64 medal_level = 5;
+  string medal_name = 6;
+  int64 medal_color = 7;
+  int64 medal_color_start = 8;
+  int64 medal_color_end = 9;
+  int64 medal_color_border = 10;
+  int64 is_lighted = 11;
+  int64 guard_level = 12;
+}
