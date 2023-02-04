@@ -1,16 +1,9 @@
 from __future__ import annotations
 
-import sys
 import zlib
 from enum import Enum, Flag, auto
-from itertools import repeat
 from operator import length_hint
 from typing import Iterable, Literal, overload
-
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:  # pragma: no cover
-    from typing_extensions import Self
 
 import brotli
 

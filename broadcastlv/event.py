@@ -125,7 +125,7 @@ class Command(EventStruct, gc=False):
                 )
                 COMMAND_MAP[self.cmd] = Command
         else:
-            self = super(Command, cls).from_bytes(data)
+            self = super().from_bytes(data)
 
         return self
 
