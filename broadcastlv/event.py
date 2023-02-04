@@ -31,7 +31,7 @@ __all__ = [
 class ConnectionClosed:
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls) -> Self | ConnectionClosed:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
@@ -48,7 +48,7 @@ class Event(metaclass=ABCMeta):
     def from_bytes(cls, data: bytes) -> Self:
         raise NotImplementedError
 
-    def into_buffer(self, buffer: bytearray, offset: int = 0):
+    def into_buffer(self, buffer: bytearray, offset: int = 0) -> None:
         buffer[offset:] = bytes(self)
 
     @abstractmethod
@@ -92,7 +92,7 @@ class EventStruct(msgspec.Struct):
     def from_bytes(cls, data: bytes) -> Self:
         return msgspec.json.decode(data, type=cls)
 
-    def into_buffer(self, buffer: bytearray, offset: int = 0):
+    def into_buffer(self, buffer: bytearray, offset: int = 0) -> None:
         _encoder.encode_into(self, buffer, offset)
 
     def __bytes__(self) -> bytes:

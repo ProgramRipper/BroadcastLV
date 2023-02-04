@@ -20,7 +20,7 @@ from .event import (
 )
 from .exception import LocalProtocolError, ProtocolError, RemoteProtocolError
 from .header import Header, HeaderStruct
-from .util import pascal_to_snake, pascal_to_upper_snake
+from .util import add_from_bytes, pascal_to_snake, pascal_to_upper_snake
 
 __all__ = [
     # command
@@ -50,6 +50,7 @@ __all__ = [
     "Header",
     "HeaderStruct",
     # util
+    "add_from_bytes",
     "pascal_to_snake",
     "pascal_to_upper_snake",
 ]
