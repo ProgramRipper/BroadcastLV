@@ -8,12 +8,14 @@ from ..util import pascal_to_snake, pascal_to_upper_snake
 if TYPE_CHECKING:
     from .danmu_msg import DanmuMsg
     from .interact_word import InteractWord
+    from .like_info_v3_update import LikeInfoV3Update
     from .send_gift import SendGift
 
 __all__ = [
     "COMMAND_MAP",
     "DanmuMsg",
     "InteractWord",
+    "LikeInfoV3Update",
     "SendGift",
 ]
 
