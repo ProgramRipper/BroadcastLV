@@ -6,6 +6,10 @@ import msgspec
 from ..event import Command
 from ..util import add_from_bytes
 
+__all__ = [
+    "InteractWord",
+]
+
 
 class Contribution(msgspec.Struct, kw_only=True, gc=False):
     grade: Literal[0, 1, 2, 3]
@@ -54,7 +58,7 @@ class Data(msgspec.Struct, kw_only=True, gc=False):
     msg_type: Literal[1, 2, 3, 4, 5, 6]
     """
     消息类型，1：进场 (Entry)，2：关注 (Attention)，3：分享 (Share)，
-    4：：特别关注 (SpecialAttention)，5：互粉 (MutualAttention)，6：未知 (Link)
+    4：特别关注 (SpecialAttention)，5：互粉 (MutualAttention)，6：未知 (Link)
     """
     fans_medal: FansMedal
     """粉丝勋章信息"""
@@ -80,5 +84,8 @@ class Data(msgspec.Struct, kw_only=True, gc=False):
 
 @add_from_bytes
 class InteractWord(Command, kw_only=True, gc=False):
+    """互动"""
+
     cmd: Literal["INTERACT_WORD"] = "INTERACT_WORD"
     data: Data
+    """互动数据"""

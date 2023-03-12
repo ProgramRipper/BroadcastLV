@@ -249,6 +249,8 @@ class Info(msgspec.Struct, kw_only=True, array_like=True, gc=False):
 
 @add_from_bytes
 class DanmuMsg(Command, kw_only=True, gc=False):
+    """弹幕"""
+
     cmd: Literal["DANMU_MSG"] = "DANMU_MSG"
     info: Info
     """弹幕信息"""

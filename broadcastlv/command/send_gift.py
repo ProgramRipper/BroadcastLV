@@ -17,6 +17,10 @@ from .send_gift_pb2 import ReceiveUserInfoProtobuf as ReceiveUserInfoProtobuf
 from .send_gift_pb2 import SendGiftBroadcastProtobuf as SendGiftBroadcastProtobuf
 from .send_gift_pb2 import SendMasterProtobuf as SendMasterProtobuf
 
+__all__ = [
+    "SendGift",
+]
+
 
 class BlindGift(msgspec.Struct, rename={"from_": "from"}, kw_only=True, gc=False):
     blind_gift_config_id: int
@@ -236,9 +240,11 @@ _data_decode = msgspec.json.Decoder(Data).decode
 
 
 class SendGift(Command, kw_only=True, gc=False):
+    """礼物"""
+
     cmd: Literal["SEND_GIFT"] = "SEND_GIFT"
     data: SendGiftBroadcastStruct | SendGiftBroadcastProtobuf if TYPE_CHECKING else msgspec.Raw
-    """礼物信息"""
+    """礼物数据"""
 
     @classmethod
     def from_bytes(cls, buffer: bytes) -> Self:
