@@ -21,7 +21,7 @@ class FansMedal(msgspec.Struct, kw_only=True, gc=False):
     """勋章拥有者房间号"""
     medal_color: int
     """勋章颜色"""
-    special: str
+    special: Literal["", "union"] = ""
     icon_id: int
     medal_color_border: int = 0
     """勋章边框色"""
@@ -43,29 +43,29 @@ class Data(msgspec.Struct, kw_only=True, gc=False):
     """发送者 uid"""
     identities: Sequence[int] = ()
     """
-    身份列表，1: 普通 (Normal)，2: 超管 # TODO (Manager)，3: 粉丝 (Fans)，
-    4: 老爷 (Vip)，5: 年费老爷 (SVip)，6: 舰长 (GuardJian)，
-    7: 提督 (GuardTi)，8: 总督 (GuardZong)
+    身份列表，1：普通 (Normal)，2：超管 (Manager)，3：粉丝 (Fans)，
+    4：老爷 (Vip)，5：年费老爷 (SVip)，6：舰长 (GuardJian)，
+    7：提督 (GuardTi)，8：总督 (GuardZong)
     """
     uname: str = "--"
     """发送者用户名"""
     uname_color: str = ""
-    """发送者用户名颜色"""
+    """发送者用户名颜色，格式为 #AARRGGBB"""
     msg_type: Literal[1, 2, 3, 4, 5, 6]
     """
-    消息类型，1: 进场 (Entry)，2: 关注 (Attention)，3: 分享 (Share)，
-    4: 特别关注 (SpecialAttention)，5: 互粉 (MutualAttention)，6: 未知 (Link)
+    消息类型，1：进场 (Entry)，2：关注 (Attention)，3：分享 (Share)，
+    4：：特别关注 (SpecialAttention)，5：互粉 (MutualAttention)，6：未知 (Link)
     """
     fans_medal: FansMedal
     """粉丝勋章信息"""
     timestamp: int
     """发送时间，单位：秒"""
     dmscore: int
+    "sendgift.dmscore"
     contribution: Contribution | None
     """高能用户榜贡献"""
     tail_icon: int
-    """尾标，102: 人气"""
-
+    """尾标，102：人气（来自人气榜）"""
     core_user_type: int
     is_spread: int
     privilege_type: int

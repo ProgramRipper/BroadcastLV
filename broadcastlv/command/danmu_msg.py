@@ -116,7 +116,7 @@ class ActivityInfo(msgspec.Struct, kw_only=True, gc=False):
 class Meta(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     _0: int
     mode: Literal[1, 4, 5]
-    """弹幕位置，1: 滚动，4: 顶部，5: 底部"""
+    """弹幕位置，1：滚动，4：顶部，5：底部"""
     size: int
     """字体大小"""
     color: int
@@ -130,9 +130,11 @@ class Meta(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     _8: int
     type: Literal[0, 1, 2, 7]
     chat_bubble_type: int
+    """弹幕气泡类型，0：无，1：总督，2：提督，3：全区周榜第一，4：分区周榜第一"""
     chat_bubble_color: str
+    """弹幕气泡颜色，格式为 #AARRGGBB,..."""
     dm_type: Literal[0, 1, 2, 6]
-    """弹幕类型，0: 文本（可能有 emoji），1: 表情，2: 语音，6: 文本 + 表情"""
+    """弹幕类型，0：文本（可能有 emoji），1：表情，2：语音，6：文本 + 表情"""
     _emoticon_options: EmoticonOptions | Literal["{}"]
 
     @property
@@ -163,13 +165,17 @@ class Sender(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     username: str = ""
     """发送者用户名"""
     is_admin: int
-    is_vip: int
-    is_svip: int
+    """是否为房管"""
+    is_vip: Literal[0, 1]
+    """是否为老爷"""
+    is_svip: Literal[0, 1]
+    """是否为年费老爷"""
     rank: int
-    """是否是正式用户，< 1e4 时不是"""
+    """是否为正式用户，< 1e4 时不是"""
     verify: Literal[0, 1]
     """是否绑定手机"""
     username_color: str = ""
+    """用户名颜色，格式为 #RRGGBB"""
 
 
 class Medal(msgspec.Struct, kw_only=True, array_like=True, gc=False):
@@ -183,7 +189,8 @@ class Medal(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     """勋章拥有者房间号"""
     medal_color: int | None = None
     """勋章颜色"""
-    special: str = ""
+    special: Literal["", "union"] = ""
+    """未知，为 union 时勋章前有城堡图标"""
     icon_id: int = 0
     medal_color_border: int = 0
     """勋章边框色"""
@@ -222,13 +229,14 @@ class Info(msgspec.Struct, kw_only=True, array_like=True, gc=False):
     sender: Sender
     """发送者信息"""
     medal: Medal
-    """勋章信息"""
+    """粉丝勋章信息"""
     level: Level
-    """等级信息"""
+    """用户等级信息"""
     title: tuple[str | None, str] = (None, "")
+    """用户头衔，title[1] 为头衔名称，格式为 title-{id}-{level}"""
     _6: int
     guard_level: Literal[0, 1, 2, 3] = 0
-    """大航海等级，0: 非舰长，1: 总督，2: 提督，3: 舰长"""
+    """大航海等级，0：非舰长，1：总督，2：提督，3：舰长"""
     _8: None
     validation: Validation
     _10: int
