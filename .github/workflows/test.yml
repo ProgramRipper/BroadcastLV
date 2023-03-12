@@ -2,8 +2,20 @@ name: test
 
 on:
   push:
+    paths:
+      - ".github/workflows/**"
+      - "pyproject.toml"
+      - "broadcastlv/**"
+      - "!broadcastlv/command/**"
+      - "tests/**"
     branches: ["master"]
   pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "pyproject.toml"
+      - "broadcastlv/**"
+      - "!broadcastlv/command/**"
+      - "tests/**"
     branches: ["master"]
 
 jobs:
