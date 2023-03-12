@@ -5,9 +5,9 @@ description = ""
 authors = [{ name = "ProgramRipper", email = "programripper@foxmail.com" }]
 dependencies = [
     "brotli~=1.0",
-    "msgspec~=0.12",
-    "typing-extensions~=4.4; python_version < '3.11'",
-    "protobuf~=4.21",
+    "msgspec~=0.13",
+    "typing-extensions~=4.5; python_version < '3.11'",
+    "protobuf~=4.22",
 ]
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -76,7 +76,7 @@ python_files = "tests/*"
 filterwarnings = ["ignore::RuntimeWarning"]
 
 [tool.black]
-extend-exclude = "^.*_pb2\\.py(i?)$"
+extend-exclude = "^.*_pb2\\.pyi?$"
 
 [tool.isort]
 profile = "black"
