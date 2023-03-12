@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .interact_word import InteractWord
     from .like_info_v3_update import LikeInfoV3Update
     from .send_gift import SendGift
+    from .watched_change import WatchedChange
 
 __all__ = [
     "COMMAND_MAP",
@@ -17,6 +18,7 @@ __all__ = [
     "InteractWord",
     "LikeInfoV3Update",
     "SendGift",
+    "WatchedChange",
 ]
 
 
