@@ -18,7 +18,12 @@ from .event import (
     HeartbeatResponse,
     NeedData,
 )
-from .exception import LocalProtocolError, ProtocolError, RemoteProtocolError
+from .exception import (
+    LocalProtocolError,
+    ProtocolError,
+    RemoteProtocolError,
+    UnknownCommandWarning,
+)
 from .header import Header, HeaderStruct
 from .util import add_from_bytes, pascal_to_snake, pascal_to_upper_snake
 
@@ -46,6 +51,7 @@ __all__ = [
     "LocalProtocolError",
     "ProtocolError",
     "RemoteProtocolError",
+    "UnknownCommandWarning",
     # header
     "Header",
     "HeaderStruct",

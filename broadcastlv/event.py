@@ -13,6 +13,7 @@ else:  # pragma: no cover
 import msgspec
 
 from .command import COMMAND_MAP
+from .exception import UnknownCommandWarning
 from .util import add_from_bytes, pascal_to_upper_snake
 
 __all__ = [
@@ -117,13 +118,26 @@ class Command(EventStruct, gc=False):
                 if (cls := COMMAND_MAP[self.cmd]) is not Command:
                     self = cls.from_bytes(data)
             except KeyError:
+                from pprint import pformat
                 from warnings import warn
 
                 warn(
-                    f"Unknown command: {self.cmd} ({data.decode()})",
-                    RuntimeWarning,
+                    f"Unknown command: {self.cmd} ({pformat(msgspec.json.decode(data))})\n"
+                    "Please raise an issue on GitHub.",
+                    UnknownCommandWarning,
                 )
                 COMMAND_MAP[self.cmd] = Command
+            except msgspec.ValidationError:
+                from pprint import pformat
+                from traceback import print_exc
+                from warnings import warn
+
+                print_exc()
+                warn(
+                    f"Failed to decode command: {self.cmd} ({pformat(msgspec.json.decode(data))})\n"
+                    "Please raise an issue on GitHub.",
+                    RuntimeWarning,
+                )
         else:
             self = super().from_bytes(data)
 

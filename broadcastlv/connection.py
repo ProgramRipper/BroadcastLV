@@ -144,9 +144,9 @@ class Connection:
                             )
                 case _:
                     raise RemoteProtocolError(f"Unknown op: {header.op}")
+        except RemoteProtocolError:
+            raise
         except Exception as e:
-            if isinstance(e, RemoteProtocolError):
-                raise
             raise RemoteProtocolError from e
 
         del self.buffer1[: header.size]

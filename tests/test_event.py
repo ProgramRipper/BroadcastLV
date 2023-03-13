@@ -1,3 +1,5 @@
+import pytest
+
 from broadcastlv.event import (
     Auth,
     AuthResponse,
@@ -6,6 +8,7 @@ from broadcastlv.event import (
     HeartbeatResponse,
     NeedData,
 )
+from broadcastlv.exception import UnknownCommandWarning
 
 
 def test_need_data():
@@ -27,17 +30,21 @@ def test_heartbeat_response():
 
 
 def test_command():
-    assert bytes(Command(cmd="COMMAND")) == b'{"cmd":"COMMAND"}'
+    assert bytes(Command(cmd="TEST")) == b'{"cmd":"TEST"}'
     assert (
-        bytes(Command.from_bytes(b'{"cmd":"COMMAND","ignored":"field"}'))
-        == b'{"cmd":"COMMAND"}'
+        bytes(Command.from_bytes(b'{"cmd":"TEST","ignored":"field"}'))
+        == b'{"cmd":"TEST"}'
     )
-    Command.from_bytes(b'{"cmd":"COMMAND"}')
+    Command.from_bytes(b'{"cmd":"TEST"}')
 
-    class Unknown(Command):
-        ...
+    with pytest.warns(UnknownCommandWarning, match="Unknown command: UNKNOWN"):
+        Command.from_bytes(b'{"cmd":"UNKNOWN"}')
 
-    assert Command.from_bytes(b'{"cmd":"UNKNOWN"}') == Unknown(cmd="UNKNOWN")
+    class Test(Command):
+        a: int
+
+    with pytest.warns(RuntimeWarning, match="Failed to decode command: TEST"):
+        Command.from_bytes(b'{"cmd":"TEST","a":"1"}')
 
 
 def test_auth():
