@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .guard_buy import GuardBuy
     from .interact_word import InteractWord
     from .like_info_v3_update import LikeInfoV3Update
+    from .live import Live
     from .send_gift import SendGift
     from .watched_change import WatchedChange
 
@@ -19,6 +20,7 @@ __all__ = [
     "GuardBuy",
     "InteractWord",
     "LikeInfoV3Update",
+    "Live",
     "SendGift",
     "WatchedChange",
 ]
