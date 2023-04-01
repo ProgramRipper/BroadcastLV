@@ -34,6 +34,6 @@ class Data(msgspec.Struct, kw_only=True, gc=False):
 class GuardBuy(Command, kw_only=True, gc=False):
     """大航海购买通知"""
 
-    cmd: str
+    cmd: Literal["GUARD_BUY"] = "GUARD_BUY"
     data: Data
     """大航海购买数据"""

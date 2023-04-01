@@ -6,13 +6,14 @@ from typing import TYPE_CHECKING, Any
 from ..util import pascal_to_snake, pascal_to_upper_snake
 
 if TYPE_CHECKING:
-    from .danmu_msg import DanmuMsg
-    from .guard_buy import GuardBuy
-    from .interact_word import InteractWord
-    from .like_info_v3_update import LikeInfoV3Update
-    from .live import Live
-    from .send_gift import SendGift
-    from .watched_change import WatchedChange
+    from .danmu_msg import DanmuMsg as DanmuMsg
+    from .guard_buy import GuardBuy as GuardBuy
+    from .interact_word import InteractWord as InteractWord
+    from .like_info_v3_update import LikeInfoV3Update as LikeInfoV3Update
+    from .live import Live as Live
+    from .preparing import Preparing as Preparing
+    from .send_gift import SendGift as SendGift
+    from .watched_change import WatchedChange as WatchedChange
 
 __all__ = [
     "COMMAND_MAP",
@@ -21,6 +22,7 @@ __all__ = [
     "InteractWord",
     "LikeInfoV3Update",
     "Live",
+    "Preparing",
     "SendGift",
     "WatchedChange",
 ]
