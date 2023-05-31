@@ -22,6 +22,7 @@ __all__ = [
     "Auth",
     "AuthResponse",
     "Command",
+    "ConnectionClosed",
     "Event",
     "Heartbeat",
     "HeartbeatResponse",
